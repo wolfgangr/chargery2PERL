@@ -38,6 +38,17 @@ while ($nbytes = read DATAIN, $data, 1) {
   } 
   printf (" %s", $hex );
 
+  if ($status > 2 ) {
+    if (($hex eq '57') or ($hex eq '58')) {
+      $status = $byte;
+
+    } else {
+      print "\t.oopsie - unrecognized data set \n";
+      $status = 0;
+
+    }
+  }
+
 
 }
 
