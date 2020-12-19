@@ -5,7 +5,7 @@
 
 my $filename = "test.raw" ;
 
-$debug = 6;
+# $debug = 6;
 
 
 open DATAIN, $filename
@@ -20,23 +20,24 @@ my $nbytes;
 my $status =0;
 my $fieldpos =0;
 
+$debug = 5;
 while ($nbytes = read DATAIN, $data, 1) {
 
   $byte = ord ($data);
   $hex = sprintf ("%02x", $byte);
-  # debug_print (6,  sprintf(" >%s", $hex ));
+  debug_printf (6, " (%s <- %d) ", $hex  , $byte );
 
   $fieldpos++;
 
   # check syntax cascade
-  if  ($byte == 24) { 
+  if  ($byte == 0x24) { 
     if ( ($fieldpos ==1) or ($fieldpos ==2 ) ) {
       debug_print (5, "'"); 
     } else {
       debug_print (5, "x24-garbage %s at pos %d\n", $hex, $fieldpos) ;
       $fieldpos = 0;
     }
-  } elsif ( ( $byte == 57 ) or ( $byte == 58) ) {
+  } elsif ( ( $byte == 0x56 ) or  ( $byte == 0x57 ) or ( $byte == 0x58) ) {
     if  ($fieldpos ==3 ) {
       debug_print (5, "'");
     } else {
@@ -44,7 +45,7 @@ while ($nbytes = read DATAIN, $data, 1) {
       $fieldpos = 0;
     }
 
-  } elsif ($fieldpos >=1) {
+  } elsif ($fieldpos <= 3) {
     debug_printf (5, "xXX-garbage %s at pos %d\n", $hex, $fieldpos) ;
     $fieldpos = 0;
 
@@ -53,7 +54,7 @@ while ($nbytes = read DATAIN, $data, 1) {
     # debug_print (5, " %s", $hex);
     debug_print (5, " ?");
   }
-  debug_printf (5, "%s", $hex);
+  debug_printf (5, " >%s< ", $hex);
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
