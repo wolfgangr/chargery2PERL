@@ -258,8 +258,31 @@ sub do_56 {
   my $parlen = $#_ +1 ;
   return undef unless $parlen >= 14 ;
 
+  # remove the last 12 bytes for fixed vars, leaving the rest for per cell voltages
+  @tail12 = splice (@_, -12) ;
+
+  $Wh_maybe = big_endian( splice (@_, 0 , 4 ) ) / 1000 ;
+  $Ah_maybe = big_endian( splice (@_, 0 , 4 ) ) / 1000 ;
+  $dontknow_maybe = big_endian( splice (@_, 0 , 4 ) ) / 1000 ;
+ 
+  # the rest are per cell voltage readings
+  my @cell_volts = () ;
+  while ($#_) {
+    my $cv = little_endian( splice (@_, 0,2)) / 1000;  
+    push ( @cell_volts, $cv   );
+  }
+
+  # collect the findings
   my %res ;
   $res{'num_param'} = $parlen ;
+  $res{'Wh?'} = $Wh_maybe ;
+  $res{'Ah?'} = $Ah_maybe ;
+  $res{'gww???'} = $dontknow_maybe ; 
+  # $res{'} =
+  # $res{'} =
+  # $res{'} =
+  $res{'cell_volts'} = \@cell_volts ; 
+
   return \%res ;
 
 }
