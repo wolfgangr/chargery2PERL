@@ -4,7 +4,7 @@
 
 
 
-my $filename = "test12.raw" ;
+my $filename = "test2.raw" ;
 
 # $debug = 6;
 #======================
@@ -66,7 +66,11 @@ while ($nbytes = read DATAIN, $data, 1) {
     $chksum = pop (@datarray);
     $crc = crc_check ($crc, \@datarray );
     debug_printf (5, "checksum: %02x , cmp %02x ", $chksum, $crc);
-    
+    if ( $chksum != $crc ) {
+      debug_printf (3, "\nchecksum error: %02x != %02x \n", $chksum, $crc);
+      $fieldpos =0;
+      next;
+    } 
 
     # data processing
     #------ end processing
