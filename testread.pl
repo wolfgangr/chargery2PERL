@@ -80,14 +80,15 @@ while ($nbytes = read DATAIN, $data, 1) {
     #------ end processing
 
     if ( $recentcmd == 0x57 ) {
-      debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
+      debug_printf (3, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
+      do_57 ( @datarray ); 
     } elsif ( $recentcmd == 0x56 ) {
       debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
     } elsif ( $recentcmd == 0x58 ) {
       debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
     }
       else  {
-      debug_printf (1, "unknown comman %02x - check manual, version, whatever...",  $recentcmd ) ;
+      debug_printf (1, "unknown command %02x - check manual, version, whatever...",  $recentcmd ) ;
     }
 
     $fieldpos =0;
@@ -191,3 +192,37 @@ sub crc_check {
     #  die "========== debug ==========";
     return $crc;
 }
+
+# --------- command processors ------------------
+
+# helpers
+# little_endian (@data) - data as byte numbers - return total number
+sub little_endian {
+  my $res = 0;
+  while (my $byte = shift) {
+    $res *= 0x100;
+    $res += $byte; 
+  }
+  return $res;
+}
+
+# same in reverse
+sub big_endian {
+  my $res = 0;
+  while (my $byte = pop) {
+    $res *= 0x100;
+    $res += $byte;
+  }
+  return $res;
+}
+
+
+
+# do_57 (@data) - crc already stripped
+sub do_57 {
+
+}
+
+
+
+
