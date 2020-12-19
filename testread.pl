@@ -82,7 +82,7 @@ while ($nbytes = read DATAIN, $data, 1) {
     if ( $recentcmd == 0x57 ) {
       debug_printf (3, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
       my $res = do_57 ( @datarray ); 
-      Dumper ($res );
+      debug_print ( 2,  Dumper ($res ));
     } elsif ( $recentcmd == 0x56 ) {
       debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
     } elsif ( $recentcmd == 0x58 ) {
@@ -200,7 +200,7 @@ sub crc_check {
 # little_endian (@data) - data as byte numbers - return total number
 sub little_endian {
   my $res = 0;
-  while (my $byte = shift) {
+  foreach my $byte ( reverse (@_) ) {
     $res *= 0x100;
     $res += $byte; 
   }
@@ -210,7 +210,7 @@ sub little_endian {
 # same in reverse
 sub big_endian {
   my $res = 0;
-  while (my $byte = pop) {
+  foreach my $byte ( @_) {
     $res *= 0x100;
     $res += $byte;
   }
@@ -222,25 +222,37 @@ sub big_endian {
 # do_57 (@data) - crc already stripped
 sub do_57 {
   # don't try useless work 
-  return undef unless ( $#@_ == 9 );
-
+  return undef unless  $#_ == 9 ;
+  my $parlen = $#_;
   # the cumbersome part - see def of log stream
-  $EOC_volt = little_endian( splice (@_, 0,2)) / 1000;
-  $mode = shift @_;
-  $current = little_endian( splice (@_, 0,2)) / 10; 
-  $t1 = little_endian( splice (@_, 0,2)) / 10;
-  $t2 = little_endian( splice (@_, 0,2)) / 10;
-  $SOC= shift @_;
+  # $EOC_volt = little_endian( splice (@_, 0,2)) / 1000;
+  # $mode = shift @_;
+  # $current = little_endian( splice (@_, 0,2)) / 10; 
+  # $t1 = little_endian( splice (@_, 0,2)) ; # / 10;
+  # $t1h = shift @_;
+  # $t1l = shift @_;
+  # ( $t1h , $t1l ) = splice (@_, 0,2) ;
+  #  $t1 =  ( $t1h * 0x100 + $t1l ) / 10 ;
+  # $t2 = little_endian( splice (@_, 0,2)) ; # / 10;
+  # $SOC= shift @_;
+  $EOC_volt = little_endian(@_[0,1]) / 1000;
+  $mode = @_[2] ;
+  $current = little_endian( @_[3,4]) / 10;
+  $t1 = little_endian( @_[5,6])  ; 
+  $t2 = little_endian( @_[7,8])  ;
+  $SOC=  @_[9] ;
 
   # maybe it's a good idea to keep structure upon retval?
-  my %res = {};
+  my %res ; #  = {};
   $res{'EOC_volt'} = $EOC_volt ;
   $res{'charge_mode'} = $mode  ;
   $res{'current'} =  $current ;
   $res{'Temp1'} = $t1 ;
   $res{'Temp2'} = $t2 ;
   $res{'SOC'} = $SOC ;
-  return $res ;
+  $res{'num_param'} = $parlen+1 ;
+  $res{'input'} = \@_ ;
+  return \%res ;
 }
 
 
