@@ -4,7 +4,7 @@
 
 
 
-my $filename = "test2.raw" ;
+my $filename = "test12.raw" ;
 
 # $debug = 6;
 #======================
@@ -93,6 +93,18 @@ while ($nbytes = read DATAIN, $data, 1) {
       debug_printf (5, "x5X-garbage %s at pos %d\n", $hex, $fieldpos) ;
       $fieldpos = 0;
     }
+
+  } elsif (($fieldpos == 1) and ( $byte == 0x68 ) ) {
+    # separator 68 3a 3a 33 0d 0a  aka "h::3\cr\lf"
+    $nbytes = read DATAIN, $data, 5;
+    if ($debug >= 2) {
+      if ($data =~ m/(::3)$/) {
+	 debug_printf (3, "spacer %c%s skipped\n", $byte, $1) ;
+      } else {
+        debug_printf (2, "unknown spacer %c.%x\n", $byte, $data)  ;	
+      }
+    }
+    $fieldpos = 0;
 
   } elsif ($fieldpos <= 3) {
     debug_printf (5, "xXX-garbage %s at pos %d\n", $hex, $fieldpos) ;
