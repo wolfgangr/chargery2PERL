@@ -280,13 +280,14 @@ sub do_56 {
 	  # while ( 0 ) {
 	  # print Dumper (\@_); 
   foreach $i (1 .. ($#_ / 2) ) {  
-    $p1 = shift @_;
-    $p2 = shift @_;
+    # $p1 = shift @_;
+    # $p2 = shift @_;
     #    $p3 = shift @_;
     # $p4 = shift @_;
 
-    $cv = ( little_endian($p1, $p2) / 1000 );
-    push ( @cell_volts, $cv   );
+    # $cv = ( little_endian($p1, $p2) / 1000 );
+    # push ( @cell_volts, $cv   );
+    push ( @cell_volts , little_endian( splice (@_, 0,2))  / 1000 );
   }	  
 
   # print Dumper (\@_, \@cell_volts);
