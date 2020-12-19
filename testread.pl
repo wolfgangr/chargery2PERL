@@ -98,7 +98,7 @@ while ($nbytes = read DATAIN, $data, 1) {
     # separator 68 3a 3a 33 0d 0a  aka "h::3\cr\lf"
     $nbytes = read DATAIN, $data, 5;
     if ($debug >= 2) {
-      if ($data =~ m/(::3)$/) {
+      if ($data =~ m/(::3)/) {
 	 debug_printf (3, "spacer %c%s skipped\n", $byte, $1) ;
       } else {
         debug_printf (2, "unknown spacer %c.%s\n", $byte, $data)  ;	
