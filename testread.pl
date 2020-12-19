@@ -210,7 +210,7 @@ sub little_endian {
 # same in reverse
 sub big_endian {
   my $res = 0;
-  foreach my $byte ( reverse @_) {
+  foreach my $byte ( reverse( @_) ) {
     $res *= 0x100;
     $res += $byte;
   }
@@ -225,22 +225,22 @@ sub do_57 {
   return undef unless  $#_ == 9 ;
   my $parlen = $#_;
   # the cumbersome part - see def of log stream
-  # $EOC_volt = little_endian( splice (@_, 0,2)) / 1000;
-  # $mode = shift @_;
-  # $current = little_endian( splice (@_, 0,2)) / 10; 
-  # $t1 = little_endian( splice (@_, 0,2))  / 10;
+  $EOC_volt = little_endian( splice (@_, 0,2)) / 1000;
+  $mode = shift @_;
+  $current = little_endian( splice (@_, 0,2)) / 10; 
+  $t1 = little_endian( splice (@_, 0,2))  / 10;
   # $t1h = shift @_;
   # $t1l = shift @_;
   # ( $t1h , $t1l ) = splice (@_, 0,2) ;
   #  $t1 =  ( $t1h * 0x100 + $t1l ) / 10 ;
-  # $t2 = little_endian( splice (@_, 0,2))  / 10;
-  # $SOC= shift @_;
-  $EOC_volt = little_endian(@_[0,1]) / 1000;
-  $mode = @_[2] ;
-  $current = little_endian( @_[3,4]) / 10;
-  $t1 = little_endian( @_[5,6])  ; 
-  $t2 = little_endian( @_[7,8])  ;
-  $SOC=  @_[9] ;
+  $t2 = little_endian( splice (@_, 0,2))  / 10;
+  $SOC= shift @_;
+  # $EOC_volt = little_endian(@_[0,1]) / 1000;
+  # $mode = @_[2] ;
+  # $current = little_endian( @_[3,4]) / 10;
+  # $t1 = little_endian( @_[5,6])  ; 
+  # $t2 = little_endian( @_[7,8])  ;
+  # $SOC=  @_[9] ;
 
   # maybe it's a good idea to keep structure upon retval?
   my %res ; #  = {};
@@ -251,7 +251,7 @@ sub do_57 {
   $res{'Temp2'} = $t2 ;
   $res{'SOC'} = $SOC ;
   $res{'num_param'} = $parlen+1 ;
-  $res{'input'} = \@_ ;
+  # $res{'input'} = \@_ ;
   return \%res ;
 }
 
