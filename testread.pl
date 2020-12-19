@@ -4,6 +4,10 @@
 
 
 my $filename = "test.raw" ;
+
+$debug = 5;
+
+
 open DATAIN, $filename
 	or die "Error opening binary input file $filename: !$\n";
 
@@ -28,25 +32,26 @@ while ($nbytes = read DATAIN, $data, 1) {
   # do the state machine
   if ( $hex eq '24') {
     $status++;
-    print "\n" if ($status == 1) ;
+    debug_print (5, "\n*- " ) if ($status == 1) ;
     if ($status > 2) {
-	print "\t.oopsie - too many 24'rs \n";
+	debug_print (5, "\t.oopsie - too many 24'rs \n" );
 	$status = 0;
     }
-  } else {
-    $status = 0;
+    # } else {
+	  # $status = 0;
   } 
-  printf (" %s", $hex );
+  debug_print (5,  sprintf(" %s", $hex ));
 
-  if ($status > 2 ) {
-    if (($hex eq '57') or ($hex eq '58')) {
+  if ($status >= 2 ) {
+    if (($hex eq '57') || ($hex eq '58')) {
       $status = $byte;
+      }
+    } elsif ($status = 2 ) {
+      debug_print (5, "\t-# oopsie - unrecognized data set \n");
+      # $status = 0;
 
     } else {
-      print "\t.oopsie - unrecognized data set \n";
-      $status = 0;
-
-    }
+      debug_print (5, ".");
   }
 
 
@@ -56,3 +61,12 @@ while ($nbytes = read DATAIN, $data, 1) {
 close DATAIN or die "Eror closing $filename $!\n";
 
 print "\n\n    ==================== regular END ===============\n\n";
+exit;
+
+
+#============================================
+# debug_print($level, $content)
+sub debug_print {
+  $level = shift @_;
+  print STDERR @_ if ( $level <= $debug) ;
+}
