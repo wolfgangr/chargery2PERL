@@ -11,6 +11,10 @@ my $filename = "test.raw" ;
 #
 
 use Data::HexDump;
+# use String::Dump qw( dump_hex);
+# use Data::Dump::OneLine;
+use Data::Dumper;
+
 
 open DATAIN, $filename
 	or die "Error opening binary input file $filename: !$\n";
@@ -45,7 +49,16 @@ while ($nbytes = read DATAIN, $data, 1) {
       next;
     } 
     # lets hope we got our data in $data
-    debug_printf (5, " - %d bytes of raw data: \n%s", $nbytes, HexDump $data);
+    # debug_printf (5, " - %d bytes of raw data: \n%s", $nbytes, HexDump $data);
+    debug_printf (5, " - %d bytes of raw data: ", $nbytes );
+    my @datarray= map (ord, split (undef, $data)); 
+    # my own hexdump
+    # print Dumper ( @data, 1,2,3) ;
+    debug_hexdump ( 4, \@datarray );
+    debug_print (4, "\n");
+    # crc check
+    # data processing
+    #------ end processing
     $fieldpos =0;
     next;
   }
@@ -104,3 +117,18 @@ sub debug_printf {
   printf STDERR  @_ if ( $level <= $debug) ;
 }
 
+# hexdump, pass array by ref
+sub debug_hexdump {
+    # print Dumper ( @_, 1,2,3) ; 
+    $level = shift @_;
+    return unless ( $level <= $debug) ;
+    $ary = shift @_;
+    # print Dumper ( @$ary ) ;
+
+    foreach my $x ( @$ary ) {
+      printf STDERR  ( " %02x", $x );
+    }
+    # print "--\n";
+    # die "========== debug ==========";
+
+}
