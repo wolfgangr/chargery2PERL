@@ -279,7 +279,8 @@ sub do_56 {
 
 	  # while ( 0 ) {
 	  # print Dumper (\@_); 
-  foreach $i (1 .. ($#_ / 2) ) {  
+  #foreach $i (1 .. ($#_ / 2) ) {  
+  while (scalar @_ >0 ) {
     # $p1 = shift @_;
     # $p2 = shift @_;
     #    $p3 = shift @_;
