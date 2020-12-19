@@ -41,7 +41,7 @@ while ($nbytes = read DATAIN, $data, 1) {
   $fieldpos++;
   $crc = ($crc + $byte) % 0x100 ;
  
-  debug_printf (5, "\n (%s <- %02x -# %05x) ", $hex  , $byte , $crc); 
+  debug_printf (6, "\n (%s <- %02x -# %05x) ", $hex  , $byte , $crc); 
 
   debug_print (5, "\n") if ($fieldpos == 1);
 
