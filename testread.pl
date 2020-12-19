@@ -101,7 +101,7 @@ while ($nbytes = read DATAIN, $data, 1) {
       if ($data =~ m/(::3)$/) {
 	 debug_printf (3, "spacer %c%s skipped\n", $byte, $1) ;
       } else {
-        debug_printf (2, "unknown spacer %c.%x\n", $byte, $data)  ;	
+        debug_printf (2, "unknown spacer %c.%s\n", $byte, $data)  ;	
       }
     }
     $fieldpos = 0;
