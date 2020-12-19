@@ -3,10 +3,14 @@
 # https://blog-en.openalfa.com/how-to-work-with-binary-data-in-a-perl-script
 
 
+
 my $filename = "test.raw" ;
 
 # $debug = 6;
+#======================
+#
 
+use Data::HexDump;
 
 open DATAIN, $filename
 	or die "Error opening binary input file $filename: !$\n";
@@ -28,6 +32,23 @@ while ($nbytes = read DATAIN, $data, 1) {
   debug_printf (6, " (%s <- %d) ", $hex  , $byte );
 
   $fieldpos++;
+
+  debug_print (5, "\n") if ($fieldpos == 1);
+
+  if ( $fieldpos == 4 ) {
+    # read data string
+    $numdbytes = $byte - 4 ; 
+    $nbytes = read DATAIN, $data, $numdbytes ;
+    if ($nbytes != $numdbytes ) {
+      debug_printf (5, "mismatch reading data - want:%d, got: %d \n", $numdbytes , $nbytes);
+      $fieldpos = 0;
+      next;
+    } 
+    # lets hope we got our data in $data
+    debug_printf (5, " - %d bytes of raw data: \n%s", $nbytes, HexDump $data);
+    $fieldpos =0;
+    next;
+  }
 
   # check syntax cascade
   if  ($byte == 0x24) { 
