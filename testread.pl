@@ -4,7 +4,7 @@
 
 
 
-my $filename = "test6.raw" ;
+my $filename = "test12.raw" ;
 
 # $debug = 6;
 #======================
