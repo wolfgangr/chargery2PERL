@@ -34,14 +34,14 @@ while ($nbytes = read DATAIN, $data, 1) {
     if ( ($fieldpos ==1) or ($fieldpos ==2 ) ) {
       debug_print (5, "'"); 
     } else {
-      debug_print (5, "x24-garbage %s at pos %d\n", $hex, $fieldpos) ;
+      debug_printf (5, "x24-garbage %s at pos %d\n", $hex, $fieldpos) ;
       $fieldpos = 0;
     }
   } elsif ( ( $byte == 0x56 ) or  ( $byte == 0x57 ) or ( $byte == 0x58) ) {
     if  ($fieldpos ==3 ) {
       debug_print (5, "'");
     } else {
-      debug_print (5, "x5X-garbage %s at pos %d\n", $hex, $fieldpos) ;
+      debug_printf (5, "x5X-garbage %s at pos %d\n", $hex, $fieldpos) ;
       $fieldpos = 0;
     }
 
@@ -52,9 +52,9 @@ while ($nbytes = read DATAIN, $data, 1) {
   } else {
     # data field still to recognize
     # debug_print (5, " %s", $hex);
-    debug_print (5, " ?");
+    debug_print (5, " :");
   }
-  debug_printf (5, " >%s< ", $hex);
+  debug_printf (5, "%s", $hex);
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
