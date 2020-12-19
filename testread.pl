@@ -81,7 +81,8 @@ while ($nbytes = read DATAIN, $data, 1) {
 
     if ( $recentcmd == 0x57 ) {
       debug_printf (3, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
-      do_57 ( @datarray ); 
+      my $res = do_57 ( @datarray ); 
+      Dumper ($res );
     } elsif ( $recentcmd == 0x56 ) {
       debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
     } elsif ( $recentcmd == 0x58 ) {
@@ -220,7 +221,26 @@ sub big_endian {
 
 # do_57 (@data) - crc already stripped
 sub do_57 {
+  # don't try useless work 
+  return undef unless $#@_ == 9;
 
+  # the cumbersome part - see def of log stream
+  $EOC_volt = little_endian( splice (@_, 0,2)) / 1000;
+  $mode = shift @_;
+  $current = little_endian( splice (@_, 0,2)) / 10; 
+  $t1 = little_endian( splice (@_, 0,2)) / 10;
+  $t2 = little_endian( splice (@_, 0,2)) / 10;
+  $SOC= shift @_;
+
+  # maybe it's a good idea to keep structure upon retval?
+  my %res = {};
+  $res{'EOC_volt'} = $EOC_volt ;
+  $res{'charge_mode'} = $mode  ;
+  $res{'current'} =  $current ;
+  $res{'Temp1'} = $t1 ;
+  $res{'Temp2'} = $t2 ;
+  $res{'SOC'} = $SOC ;
+  return $res ;
 }
 
 
