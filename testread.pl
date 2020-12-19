@@ -84,9 +84,15 @@ while ($nbytes = read DATAIN, $data, 1) {
       my $res = do_57 ( @datarray ); 
       debug_print ( 2,  Dumper ($res ));
     } elsif ( $recentcmd == 0x56 ) {
-      debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
+      debug_printf (3, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
+      my $res = do_56 ( @datarray );
+      debug_print ( 2,  Dumper ($res ));
+
     } elsif ( $recentcmd == 0x58 ) {
       debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
+      my $res = do_58 ( @datarray );
+      debug_print ( 2,  Dumper ($res ));
+
     }
       else  {
       debug_printf (1, "unknown command %02x - check manual, version, whatever...",  $recentcmd ) ;
@@ -222,25 +228,16 @@ sub big_endian {
 # do_57 (@data) - crc already stripped
 sub do_57 {
   # don't try useless work 
-  return undef unless  $#_ == 9 ;
-  my $parlen = $#_;
+  my $parlen = $#_ +1 ;
+  return undef unless $parlen  == 10 ;
+  
   # the cumbersome part - see def of log stream
   $EOC_volt = little_endian( splice (@_, 0,2)) / 1000;
   $mode = shift @_;
   $current = little_endian( splice (@_, 0,2)) / 10; 
   $t1 = little_endian( splice (@_, 0,2))  / 10;
-  # $t1h = shift @_;
-  # $t1l = shift @_;
-  # ( $t1h , $t1l ) = splice (@_, 0,2) ;
-  #  $t1 =  ( $t1h * 0x100 + $t1l ) / 10 ;
   $t2 = little_endian( splice (@_, 0,2))  / 10;
   $SOC= shift @_;
-  # $EOC_volt = little_endian(@_[0,1]) / 1000;
-  # $mode = @_[2] ;
-  # $current = little_endian( @_[3,4]) / 10;
-  # $t1 = little_endian( @_[5,6])  ; 
-  # $t2 = little_endian( @_[7,8])  ;
-  # $SOC=  @_[9] ;
 
   # maybe it's a good idea to keep structure upon retval?
   my %res ; #  = {};
@@ -250,11 +247,25 @@ sub do_57 {
   $res{'Temp1'} = $t1 ;
   $res{'Temp2'} = $t2 ;
   $res{'SOC'} = $SOC ;
-  $res{'num_param'} = $parlen+1 ;
-  # $res{'input'} = \@_ ;
+  $res{'num_param'} = $parlen ;
+
   return \%res ;
 }
 
+# do_56 (@data) - crc already stripped
+sub do_56 {
+  # we need a trail of 3x4 long fields, at least one cell -> 14 fields
+  my $parlen = $#_ +1 ;
+  return undef unless $parlen >= 14 ;
 
+  my %res ;
+  $res{'num_param'} = $parlen ;
+  return \%res ;
 
+}
+  
 
+# do_58 (@data) - crc already stripped
+sub do_58 {
+  return undef
+}
