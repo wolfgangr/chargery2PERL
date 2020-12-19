@@ -5,7 +5,7 @@
 
 my $filename = "test.raw" ;
 
-$debug = 5;
+$debug = 6;
 
 
 open DATAIN, $filename
@@ -21,13 +21,9 @@ my $status =0;
 
 while ($nbytes = read DATAIN, $data, 1) {
 
-  # do stuff
-  # print ".";
   $byte = ord ($data);
   $hex = sprintf ("%02x", $byte);
-  # $ihex = sprintf ("%02x", $byte ^ hex('ff'));
-  # print "\n" if ( $hex eq '24');
-  # printf (" %s", $hex );
+  debug_print (6,  sprintf(" >%s", $hex ));
 
   # do the state machine
   if ( $hex eq '24') {
@@ -40,17 +36,18 @@ while ($nbytes = read DATAIN, $data, 1) {
     # } else {
 	  # $status = 0;
   } 
-  debug_print (5,  sprintf(" %s", $hex ));
+  # debug_print (5,  sprintf(" %s", $hex ));
 
   if ($status >= 2 ) {
     if (($hex eq '57') || ($hex eq '58')) {
       $status = $byte;
       }
-    } elsif ($status = 2 ) {
+    } elsif ($status > 2 ) {
       debug_print (5, "\t-# oopsie - unrecognized data set \n");
       # $status = 0;
 
     } else {
+	    # garbage    
       debug_print (5, ".");
   }
 
