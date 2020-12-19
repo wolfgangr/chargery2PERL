@@ -28,6 +28,7 @@ my $nbytes;
 my $status =0;
 my $fieldpos =0;
 my $crc = 0;
+my $recentcmd =0 ;
 $debug = 5;
 
 while ($nbytes = read DATAIN, $data, 1) {
@@ -36,8 +37,11 @@ while ($nbytes = read DATAIN, $data, 1) {
   $hex = sprintf ("%02x", $byte);
   debug_printf (6, " (%s <- %d) ", $hex  , $byte );
 
-  # update field counter and crd
-  unless ( $fieldpos )  { $crc = 0; }
+  # update field counter, crc, recent command status, 
+  unless ( $fieldpos )  { 
+    $crc = 0; 
+    $recentcmd =0 ;
+  }
   $fieldpos++;
   $crc = ($crc + $byte) % 0x100 ;
  
@@ -74,6 +78,18 @@ while ($nbytes = read DATAIN, $data, 1) {
 
     # data processing
     #------ end processing
+
+    if ( $recentcmd == 0x57 ) {
+      debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
+    } elsif ( $recentcmd == 0x56 ) {
+      debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
+    } elsif ( $recentcmd == 0x58 ) {
+      debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
+    }
+      else  {
+      debug_printf (1, "unknown comman %02x - check manual, version, whatever...",  $recentcmd ) ;
+    }
+
     $fieldpos =0;
     next;
   }
@@ -88,6 +104,8 @@ while ($nbytes = read DATAIN, $data, 1) {
     }
   } elsif ( ( $byte == 0x56 ) or  ( $byte == 0x57 ) or ( $byte == 0x58) ) {
     if  ($fieldpos ==3 ) {
+      # memorize state for further processing
+      $recentcmd = $byte;
       debug_print (5, "'");
     } else {
       debug_printf (5, "x5X-garbage %s at pos %d\n", $hex, $fieldpos) ;
