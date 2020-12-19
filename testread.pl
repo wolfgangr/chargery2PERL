@@ -27,15 +27,21 @@ my $nbytes;
 
 my $status =0;
 my $fieldpos =0;
-
+my $crc = 0;
 $debug = 5;
+
 while ($nbytes = read DATAIN, $data, 1) {
 
   $byte = ord ($data);
   $hex = sprintf ("%02x", $byte);
   debug_printf (6, " (%s <- %d) ", $hex  , $byte );
 
+  # update field counter and crd
+  unless ( $fieldpos )  { $crc = 0; }
   $fieldpos++;
+  $crc = ($crc + $byte) % 0x100 ;
+ 
+  debug_printf (5, "\n (%s <- %02x -# %05x) ", $hex  , $byte , $crc); 
 
   debug_print (5, "\n") if ($fieldpos == 1);
 
@@ -57,6 +63,11 @@ while ($nbytes = read DATAIN, $data, 1) {
     debug_hexdump ( 4, \@datarray );
     debug_print (4, "\n");
     # crc check
+    $chksum = pop (@datarray);
+    $crc = crc_check ($crc, \@datarray );
+    debug_printf (5, "checksum: %02x , cmp %02x ", $chksum, $crc);
+    
+
     # data processing
     #------ end processing
     $fieldpos =0;
@@ -131,4 +142,18 @@ sub debug_hexdump {
     # print "--\n";
     # die "========== debug ==========";
 
+}
+
+# crc_check ( $crcold, \@data )
+# data is an array of bytes as numbers
+sub crc_check {
+   my $crc = shift @_;
+   $ary = shift @_;
+   foreach my $x ( @$ary ) {
+           my $oldcrc = $crc;
+           $crc = ($crc + $x ) % 0x100 ;
+	   # printf  ( " %02x - %02x -> %02x \n", $oldcrc,  $x ,  $crc   );
+    }
+    #  die "========== debug ==========";
+    return $crc;
 }
