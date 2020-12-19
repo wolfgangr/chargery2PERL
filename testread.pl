@@ -222,7 +222,7 @@ sub big_endian {
 # do_57 (@data) - crc already stripped
 sub do_57 {
   # don't try useless work 
-  return undef unless $#@_ == 9;
+  return undef unless ( $#@_ == 9 );
 
   # the cumbersome part - see def of log stream
   $EOC_volt = little_endian( splice (@_, 0,2)) / 1000;
