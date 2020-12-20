@@ -267,27 +267,7 @@ sub do_56 {
  
   # the rest are per cell voltage readings
   my @cell_volts = () ;
-  # while ($#_) {
-  # for ( my @cell_volts = () , my $cv = little_endian( splice (@_, 0,2)) / 1000, $#_ ) {
-	  # my $cv = little_endian( splice (@_, 0,2)) / 1000;  
-	  # for (my $cnt = $#_ ; $cnt -= 2; $cnt <=0 ) {
-    
-	  #push ( @cell_volts, $cv   );
-	  # push ( @cell_volts , little_endian( splice (@_, 0,2))  / 1000 );  
-	  # }
-
-
-	  # while ( 0 ) {
-	  # print Dumper (\@_); 
-  #foreach $i (1 .. ($#_ / 2) ) {  
-  while (scalar @_ >0 ) {
-    # $p1 = shift @_;
-    # $p2 = shift @_;
-    #    $p3 = shift @_;
-    # $p4 = shift @_;
-
-    # $cv = ( little_endian($p1, $p2) / 1000 );
-    # push ( @cell_volts, $cv   );
+  while ( $#_ > 0) { 
     push ( @cell_volts , little_endian( splice (@_, 0,2))  / 1000 );
   }	  
 
@@ -300,14 +280,11 @@ sub do_56 {
   $res{'Wh?'} = $Wh_maybe ;
   $res{'Ah?'} = $Ah_maybe ;
   $res{'gww???'} = $dontknow_maybe ; 
-  # $res{'} =
-  # $res{'} =
-  # $res{'} =
   $res{'cell_volts'} = \@cell_volts ; 
   $res{'num_param'} = $parlen;
 
-  $res{'rest'} = \@_;
-  $res{'tail'} = \@tail12 ;
+  # $res{'rest'} = \@_;
+  # $res{'tail'} = \@tail12 ;
 
   return \%res ;
 
