@@ -227,7 +227,7 @@ sub big_endian {
 
 # do_57 (@data) - crc already stripped
 sub do_57 {
-  # don't try useless work 
+  # check for correct data lenght 
   my $parlen = $#_ +1 ;
   return undef unless $parlen  == 10 ;
   
@@ -261,6 +261,7 @@ sub do_56 {
   # remove the last 12 bytes for fixed vars, leaving the rest for per cell voltages
   my @tail12 = splice (@_, -12) ;
 
+  # process the tail, we are not sure about the association of the extra field
   my $Wh_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
   my $Ah_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
   my $dontknow_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
@@ -271,9 +272,6 @@ sub do_56 {
     push ( @cell_volts , little_endian( splice (@_, 0,2))  / 1000 );
   }	  
 
-  # print Dumper (\@_, \@cell_volts);
-  
-
   # collect the findings
   my %res ;
   $res{'num_param'} = $parlen ;
@@ -281,10 +279,6 @@ sub do_56 {
   $res{'Ah?'} = $Ah_maybe ;
   $res{'gww???'} = $dontknow_maybe ; 
   $res{'cell_volts'} = \@cell_volts ; 
-  # $res{'num_param'} = $parlen;
-
-  # $res{'rest'} = \@_;
-  # $res{'tail'} = \@tail12 ;
 
   return \%res ;
 
@@ -300,10 +294,18 @@ sub do_58 {
   my $mode = shift @_;
   my $current = little_endian( splice (@_, 0,2)) / 10; 
 
+  # the rest are per cell I_nternal R_esistance readings
+  my @cell_IR = () ;
+  while ( $#_ > 0) { 
+    push ( @cell_IR , little_endian( splice (@_, 0,2))  / 10 );
+  }	 
+
   # collect the findings
   my %res ;
   $res{'num_param'} = $parlen ;
+  $res{'charge_mode'} = $mode  ;
+  $res{'current'} =  $current ;
+  $res{'cell_IRs'} = \@cell_IR ; 
 
-
-  return undef
+  return \%res ;
 }
