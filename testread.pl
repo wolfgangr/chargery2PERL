@@ -284,7 +284,6 @@ sub do_56 {
 
 }
   
-# kilroy was here
 # do_58 (@data) - crc already stripped
 sub do_58 {
   # still to be tested - no data yet
