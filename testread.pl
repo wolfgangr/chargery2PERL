@@ -232,12 +232,12 @@ sub do_57 {
   return undef unless $parlen  == 10 ;
   
   # the cumbersome part - see def of log stream
-  $EOC_volt = little_endian( splice (@_, 0,2)) / 1000;
-  $mode = shift @_;
-  $current = little_endian( splice (@_, 0,2)) / 10; 
-  $t1 = little_endian( splice (@_, 0,2))  / 10;
-  $t2 = little_endian( splice (@_, 0,2))  / 10;
-  $SOC= shift @_;
+  my $EOC_volt = little_endian( splice (@_, 0,2)) / 1000;
+  my $mode = shift @_;
+  my $current = little_endian( splice (@_, 0,2)) / 10; 
+  my $t1 = little_endian( splice (@_, 0,2))  / 10;
+  my $t2 = little_endian( splice (@_, 0,2))  / 10;
+  my $SOC= shift @_;
 
   # maybe it's a good idea to keep structure upon retval?
   my %res ; #  = {};
@@ -259,11 +259,11 @@ sub do_56 {
   return undef unless $parlen >= 14 ;
 
   # remove the last 12 bytes for fixed vars, leaving the rest for per cell voltages
-  @tail12 = splice (@_, -12) ;
+  my @tail12 = splice (@_, -12) ;
 
-  $Wh_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
-  $Ah_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
-  $dontknow_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
+  my $Wh_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
+  my $Ah_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
+  my $dontknow_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
  
   # the rest are per cell voltage readings
   my @cell_volts = () ;
@@ -281,7 +281,7 @@ sub do_56 {
   $res{'Ah?'} = $Ah_maybe ;
   $res{'gww???'} = $dontknow_maybe ; 
   $res{'cell_volts'} = \@cell_volts ; 
-  $res{'num_param'} = $parlen;
+  # $res{'num_param'} = $parlen;
 
   # $res{'rest'} = \@_;
   # $res{'tail'} = \@tail12 ;
@@ -293,5 +293,17 @@ sub do_56 {
 
 # do_58 (@data) - crc already stripped
 sub do_58 {
+  # still to be tested - no data yet
+  my $parlen = $#_ +1 ;
+  return undef unless $parlen >= 5 ;
+
+  my $mode = shift @_;
+  my $current = little_endian( splice (@_, 0,2)) / 10; 
+
+  # collect the findings
+  my %res ;
+  $res{'num_param'} = $parlen ;
+
+
   return undef
 }
