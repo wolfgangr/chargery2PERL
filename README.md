@@ -14,5 +14,7 @@ Hardware considerations and configuration clues:
 https://github.com/Tobi177/venus-chargerybms/issues/5
   
 Disclaimer:  
-early testing stage does not even work for me 
-never use for any serious work!
+early testing stage -   
+does not even work for me -  
+never use for any serious work!  
+Expect VERY nasty things to happen ;-)
