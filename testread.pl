@@ -4,7 +4,10 @@
 
 
 
-my $filename = "test12.raw" ;
+# my $filename = "test12.raw" ;
+my $device ="../dev_chargery";
+my $filename =  $device ;
+
 
 # $debug = 6;
 #======================
@@ -15,6 +18,8 @@ use Data::HexDump;
 # use Data::Dump::OneLine;
 use Data::Dumper;
 
+
+system("setstty-RS485.sh");
 
 open DATAIN, $filename
 	or die "Error opening binary input file $filename: !$\n";
