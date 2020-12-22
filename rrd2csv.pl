@@ -7,6 +7,9 @@
 #
 use Getopt::Std;
 use  RRDs;
+use DateTime;
+# use POSIX qw(strftime);
+
 
 # we need at least a rrd file name and a CF
 die "usage $0 db.rrd CF [-s start] [-e end] [-h] [-x sep] [-d delim] " unless $#ARGV >= 1;
@@ -28,7 +31,13 @@ printf STDERR "parameter db=%s CF=%s start=%s end=%s header=%s sep=%s delim=%s \
 
 my ($start,$step,$names,$data) = RRDs::fetch (@paramlist);
 
-printf STDERR (" start %d, stop %d, columns %d, rows %d\n\tErr: >%s<\n", 
-       	$start,$step, $#names, $#data, RRDs::error);
+# my $startstring = strftime "%c" , $start ; # if ($start ;)
+
+my $dt = DateTime->from_epoch( epoch => $start );
+# my $startstring = $dt->ymd('-') . ' ' . $dt->hms(':') ;
+
+printf STDERR (" start %s step %d, columns %d, rows %d\n\tErr: >%s<\n", 
+       	$dt->datetime('_'),
+	$step, $#names, $#data, RRDs::error);
 
 
