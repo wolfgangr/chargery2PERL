@@ -163,8 +163,11 @@ if ($header) {
    print  OF $titleline . "\n";
 }
 
-my $rowtime = $start;
-foreach my $datarow ( @$data ) {
+# my $rowtime = $start;
+# foreach my $datarow ( @$data ) {
+for my $rowcnt (0 .. $#$data ) {
+   my $datarow = $$data[ $rowcnt ];
+   my $rowtime = $start + $rowcnt * $step;
    # check for empty data row
    # foreach (@cell_volts) { $pack_volts += $_ ; }
    my $defcnt = 0 ;
@@ -187,7 +190,7 @@ foreach my $datarow ( @$data ) {
    }
 
    my $dataline = my_join ( $delim, $sep, $timestring, @$datarow ) ;
-   $rowtime += $step ;
+   # $rowtime += $step ;
    print  OF $dataline . "\n";
    # print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
    # print Dumper ($datarow );
