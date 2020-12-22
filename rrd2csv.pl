@@ -97,8 +97,8 @@ die "$usage" unless ($retval) ;
 
 die "$usage_long" if $opt_h  ;
 
-my $start  = $opt_s || 'e-1d';
-my $end    = $opt_e || 'N';
+my $start  = $opt_s ; # || 'e-1d';
+my $end    = $opt_e ; # || 'now';
 my $header = $opt_t;
 my $hl_timetag = $opt_T || 'time' ;
 my $sep    = $opt_x;
@@ -111,14 +111,22 @@ $debug = $opt_v unless $opt_v eq '';
 debug_printf (3, "parameter db=%s CF=%s start=%s end=%s resolution=%s align=%d output=%s header=%s sep=%s delim=%s \n",
 	$rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      );
 
-@paramlist = ($rrdfile, $cf, '-s', $start, '-e', $end);
+# @paramlist = ($rrdfile, $cf, '-s', $start, '-e', $end);
+@paramlist = ($rrdfile , $cf);
+
+push @paramlist, sprintf ("end='%s'", $end ) if $end  ;
+push @paramlist, sprintf ("start='%s'", $start) if $start  ;
 push @paramlist, '-a' if $align ;
 push @paramlist, ('-r', $res ) if $res ; 
+my $paramstring = join ( ' ', @paramlist);
 
 debug_printf (3, "%s\n", join ( ' | ', @paramlist));
+# debug_printf (3, "%s\n", $paramstring);
 
 
+# my ($start,$step,$names,$data) = RRDs::fetch ($paramstring);
 my ($start,$step,$names,$data) = RRDs::fetch (@paramlist);
+
 
 # my $startstring = strftime "%c" , $start ; # if ($start ;)
 
@@ -155,7 +163,7 @@ foreach my $datarow ( @$data ) {
    my $defcnt = 0 ;
    foreach ( @$datarow )  {  $defcnt++ if defined $_ }
 
-   next unless $defcnt;
+   # next unless $defcnt;
 
    # time string format selection
    my $timestring;
@@ -164,7 +172,7 @@ foreach my $datarow ( @$data ) {
       my $dt =  DateTime->from_epoch( epoch => $rowtime );
       $timestring =  sprintf ( "%s %s", $dt->ymd('-') , $dt->hms(':') ) ;
    } elsif ( $opt_H ) {
-      # human readable datetime e.g. 22.12.2020-05:00:00 , i.e. dd.mm.yy-hh:mm:ss
+      # human readable datetime e.g. 22.12.2020-05:00:00 , i.e. dd.mm.yyyy-hh:mm:ss
       my $dt =  DateTime->from_epoch( epoch => $rowtime );
       $timestring =  sprintf ( "%s-%s", $dt->dmy('.') , $dt->hms );
    } else {
