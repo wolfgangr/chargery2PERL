@@ -19,10 +19,11 @@ $hb_day = 24 * $hb_hr ;		# 24 hr granularity
 $r_day = 22000;			# 6 yrs
 
 $rrdtool =`which rrdtool`;
-$nl = "\\" . "\n";
+chomp $rrdtool ;
+our $nl = " \\\n";
 
-my $cmd = "$rrdtool create cells.rrd --start NOW" 
-$cmd .= sprintf (" --step %d ", $step ");
+my $cmd = "$rrdtool create cells.rrd --start NOW"; 
+$cmd .= sprintf (" --step %d ", $step );
 $cmd .=  $nl;
 
 foreach my $cell(1 .. $num_cells) {
@@ -39,7 +40,8 @@ $cmd .= rra ( $hb_hr,  $r_hr,  'MIN', 'MAX', 'AVERAGE');
 $cmd .= rra ( $hb_day,  $r_day,  'MIN', 'MAX', 'AVERAGE');
 
 print $cmd; 
-
+print "\n---------    ... executing ....   ----------- \n";
+print `$cmd`;
 
 exit;
 
@@ -50,9 +52,9 @@ sub rra {
   my $s = shift ;
   my $r = shift ;
   foreach my $tag ( @_ ) {
-    $rv .= sprintf ("RRA:%s:0.5:%d:%d $s", $tag $s, $r , $nl );
+    $rv .= sprintf ("RRA:%s:0.5:%d:%d %s", $tag , $s, $r , $nl );
   }
-  return $rv
+  return $rv ;
 }
 
 

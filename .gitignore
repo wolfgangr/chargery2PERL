@@ -1,3 +1,4 @@
 test*.raw*
 test.log*
 *.swp
+*.rrd
