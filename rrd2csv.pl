@@ -81,7 +81,7 @@ use Data::Dumper  ;
 # use POSIX qw(strftime);
 
 
-our $debug =3;
+our $debug =0;
 
 # we need at least a rrd file name and a CF
 # die "$usage" unless $#ARGV >= 1;
@@ -92,18 +92,20 @@ my $cf      = shift @ARGV;
 die "$usage" unless $rrdfile;
 die "$usage_long" if ( ! ($cf) ) or $rrdfile eq '-h' or $cf eq '-h' ;
 
-getopts('s:e:tT:HMx:d:r:af:HMv:V:h');
+my $retval = getopts('s:e:tT:HMx:d:r:af:HMv:V:h')  ;
+die "$usage" unless ($retval) ;
 
 die "$usage_long" if $opt_h  ;
 
-$start  = $opt_s || 'e-1d';
-$end    = $opt_e || 'N';
-$header = $opt_t;
-$sep    = $opt_x;
-$delim  = $opt_d;
-$align  = $opt_a;
-$res    = $opt_r;
-$outfile = $opt_f ;
+my $start  = $opt_s || 'e-1d';
+my $end    = $opt_e || 'N';
+my $header = $opt_t;
+my $sep    = $opt_x;
+my $delim  = $opt_d;
+my $align  = $opt_a;
+my $res    = $opt_r;
+my $outfile = $opt_f ;
+$debug = $opt_v unless $opt_v eq ''; 
 
 debug_printf (3, "parameter db=%s CF=%s start=%s end=%s resolution=%s align=%d output=%s header=%s sep=%s delim=%s \n",
 	$rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      );
