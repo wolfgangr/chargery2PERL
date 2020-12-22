@@ -2,3 +2,4 @@ test*.raw*
 test.log*
 *.swp
 *.rrd
+create_*_rrd.sh
