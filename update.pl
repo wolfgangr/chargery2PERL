@@ -127,6 +127,23 @@ while ($nbytes = read DATAIN, $data, 1) {
       my $res = do_56 ( @datarray );
       debug_print ( 2,  Dumper ($res ));
 
+      debug_printf ( 5, "RRD params %s - %s \n" , $rrd_pack56 , $rrd_tpl_pack56 );
+      # my $update_data = 
+      my $update_data =  join (':', $now, (@{$res}{@hash_slice_56} ));
+      debug_printf ( 3, "RRD data %s\n", $update_data );
+die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      RRDs::update ($rrd_pack56, '--template', $rrd_tpl_pack56, $update_data ) unless $dryrun ;
+      if ($debug >= 3) {
+        my $ERR=RRDs::error;
+        # die "ERROR while updating mydemo.rrd: $ERR\n" if $ERR;
+        debug_print ( 3, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR;
+
+      }
+
+      # die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+
+
+
     } elsif ( $recentcmd == 0x58 ) {
       debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
       my $res = do_58 ( @datarray );
@@ -303,9 +320,9 @@ sub do_56 {
   my @tail12 = splice (@_, -12) ;
 
   # process the tail, we are not sure about the association of the extra field
-  my $Wh_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
-  my $Ah_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
-  my $dontknow_maybe = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
+  my $Wh = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
+  my $Ah = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
+  # my $unused = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
  
   # the rest are per cell voltage readings
   my @cell_volts = () ;
@@ -316,10 +333,15 @@ sub do_56 {
   # collect the findings
   my %res ;
   $res{'num_param'} = $parlen ;
-  $res{'Wh?'} = $Wh_maybe ;
-  $res{'Ah?'} = $Ah_maybe ;
-  $res{'gww???'} = $dontknow_maybe ; 
+  $res{'Wh'} = $Wh ;
+  $res{'Ah'} = $Ah ;
+  # $res{'gww???'} = $dontknow_maybe ; 
   $res{'cell_volts'} = \@cell_volts ; 
+
+  # we keep a sum of all cells as well
+  my $pack_volts = 0 ;
+  foreach (@cell_volts) { $pack_volts += $_ ; }
+  $res{'sum_volts'} = $pack_volts;
 
   return \%res ;
 
