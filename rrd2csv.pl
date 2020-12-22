@@ -38,6 +38,6 @@ my $dt = DateTime->from_epoch( epoch => $start );
 
 printf STDERR (" start %s step %d, columns %d, rows %d\n\tErr: >%s<\n", 
        	$dt->datetime('_'),
-	$step, $#names, $#data, RRDs::error);
+	$step, $#$names, $#$data, RRDs::error);
 
 
