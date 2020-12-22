@@ -84,14 +84,17 @@ use Data::Dumper  ;
 our $debug =3;
 
 # we need at least a rrd file name and a CF
-die "$usage" unless $#ARGV >= 1;
+# die "$usage" unless $#ARGV >= 1;
 
 my $rrdfile = shift @ARGV;
 my $cf      = shift @ARGV;
 
+die "$usage" unless $rrdfile;
+die "$usage_long" if ( ! ($cf) ) or $rrdfile eq '-h' or $cf eq '-h' ;
+
 getopts('s:e:tT:HMx:d:r:af:HMv:V:h');
 
-die "$usage_long" if $opt_h;
+die "$usage_long" if $opt_h  ;
 
 $start  = $opt_s || 'e-1d';
 $end    = $opt_e || 'N';
