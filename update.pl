@@ -104,7 +104,7 @@ while ($nbytes = read DATAIN, $data, 1) {
       debug_print ( 2,  Dumper ($res ));
       # my $update_data = join (':', (@res($hash_slice_57) ));
       debug_printf ( 5, "RRD params %s - %s - %s " , $rrd_pack57 , $rrd_tpl_pack57, $hash_slice_57 );
-      my $update_data = join (':', (@res($hash_slice_57) ));
+      my $update_data = join (':', (@res{$hash_slice_57} ));
       debug_printf ( 3, "RRD data %s", $update_data );
 
 die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
