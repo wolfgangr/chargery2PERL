@@ -91,6 +91,8 @@ my $cf      = shift @ARGV;
 
 getopts('s:e:tT:HMx:d:r:af:HMv:V:h');
 
+die "$usage_long" if $opt_h;
+
 $start  = $opt_s || 'e-1d';
 $end    = $opt_e || 'N';
 $header = $opt_t;
