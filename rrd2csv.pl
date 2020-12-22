@@ -2,10 +2,10 @@
 #
 # extract data from rrd and write csv data
 
-our $usage <<"EOF_USAGE";
+our $usage = <<"EOF_USAGE";
 usage: $0 db.rrd CF
   [-s start][-e end][-r res][-a]  [-V valid-rows ]
-  [-f outfile][-x sep][-d delim][-t][-T dttag][-H][-M]     [-h]
+  [-f outfile][-x sep][-d delim][-t][-T dttag][-H][-M]   [-v #][-h]
 EOF_USAGE
 
 
@@ -89,7 +89,7 @@ die "$usage" unless $#ARGV >= 1;
 my $rrdfile = shift @ARGV;
 my $cf      = shift @ARGV;
 
-getopts('s:e:tx:d:r:af:HMv:V:h');
+getopts('s:e:tT:HMx:d:r:af:HMv:V:h');
 
 $start  = $opt_s || 'e-1d';
 $end    = $opt_e || 'N';
