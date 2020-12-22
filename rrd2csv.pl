@@ -52,24 +52,35 @@ debug_printf ( 3, "retrieved, \n start %s step %d, columns %d, rows %d\n\tErr: >
 
 
 # ---- go to work ----
-# $outfile = '|-' unless  $outfile ;   # this seems to write to STDOUT
+#
 if ( $outfile) {
   open (OF , '>' ,   $outfile)  or die "$! \n could not open $outfile for writing"; 
 } else {
-  # iopen (OF , '|-') or die "$! \n could not access STDOUT for writing";
+  # way to redirect OF to STDOUT
   *OF = *STDOUT;
 }
 
 debug_printf ( 3, "opened output file: %s\n", $outfile ); 
 
+# conditional header
+#
 if ($header) { 
-   $titleline = my_join ( $delim, $sep, 'time', @$names) ;
-   # debug_printf ( 3, "%s\n", $titleline );
+   my $titleline = my_join ( $delim, $sep, 'time', @$names) ;
    print  OF $titleline . "\n";
-   # print  OF " stuff\n";
 }
 
-close OF ;
+my $rowtime = $start;
+foreach my $datarow ( @$data ) {
+   my $timestring = sprintf "%s" , $rowtime ;
+   my $dataline = my_join ( $delim, $sep, $timestring, @$datarow ) ;
+   $rowtime += $step ;
+   print  OF $dataline . "\n";
+
+} 
+
+# 
+
+close OF if ( $outfile) ;
 
 exit ;
 
