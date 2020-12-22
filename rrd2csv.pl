@@ -157,8 +157,18 @@ foreach my $datarow ( @$data ) {
 
    next unless $defcnt;
 
+   # time string format selection
+   my $timestring;
+   if ( $opt_M ) {
+      my $dt =  DateTime->from_epoch( epoch => $rowtime );
+      $timestring =  $dt->datetime('_');
+   } elsif ( $opt_H ) {
+      my $dt =  DateTime->from_epoch( epoch => $rowtime );
+      $timestring =  sprintf ( "%s-%s", $dt->dmy('.') , $dt->hms );
+   } else {
+     $timestring = sprintf "%s" , $rowtime ;
+   }
 
-   my $timestring = sprintf "%s" , $rowtime ;
    my $dataline = my_join ( $delim, $sep, $timestring, @$datarow ) ;
    $rowtime += $step ;
    print  OF $dataline . "\n";
