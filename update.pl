@@ -123,7 +123,9 @@ while ($nbytes = read DATAIN, $data, 1) {
       debug_printf ( 3, "RRD data %s\n", $update_data );
 
       RRDs::update ($rrd_pack57, '--template', $rrd_tpl_pack57, $update_data ) unless $dryrun ;
-      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR = RRDs::error ;
+      # debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR = RRDs::error ;
+      # debug_rrd ($level1, $level2, $ERR )
+      debug_rrd (2,3, RRDs::error );
 
     } elsif ( $recentcmd == 0x56 ) {
       debug_printf (4, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
@@ -137,7 +139,8 @@ while ($nbytes = read DATAIN, $data, 1) {
       debug_printf ( 3, "RRD data %s\n", $update_data );
 
       RRDs::update ($rrd_pack56, '--template', $rrd_tpl_pack56, $update_data ) unless $dryrun ;
-      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR=RRDs::error ;
+      # debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR=RRDs::error ;
+      debug_rrd (2,3, RRDs::error );
 
       # assemble update data for cell part
       debug_printf ( 5, "RRD params %s - %s \n" , $rrd_cells , $rrd_tpl_cells );
@@ -146,7 +149,8 @@ while ($nbytes = read DATAIN, $data, 1) {
       debug_printf ( 3, "RRD data %s\n", $update_data );
 
       RRDs::update ($rrd_cells, '--template', $rrd_tpl_cells , $update_data ) unless $dryrun ;
-      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR=RRDs::error ;
+      # debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR=RRDs::error ;
+      debug_rrd (2,3, RRDs::error );
 
 
 # die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
@@ -236,6 +240,27 @@ sub debug_print {
 sub debug_printf {
   $level = shift @_;
   printf STDERR  @_ if ( $level <= $debug) ;
+}
+
+# debug_rrd ($level1, $level2, $ERR ) 
+#  level1 : at least to report anything, but ....
+#  level2 ... report even double update times
+#
+sub debug_rrd {
+  ($level1, $level2, $ERR) = @_ ;
+  return unless ($ERR);
+  return if ($debug < $level1);
+  my $fiter = '(illegal attempt to update using time )'
+  	. '(\d{10,})'
+	. '( when last update time is )'
+	. '(\d{10,})'
+	. ' (\(minimum one second step\))'  
+  ;
+  return if ( ($ERR =~ /$filter/) and ( $debug < $level2)) ; 
+  debug_printf ($level2, "ERROR while updating : %s\n", $ERR);
+  # printf ("debug_rrd called: %d - %d - %s\n" , $level1, $level2, $ERR); 
+  # printf ("match %s\n %s%s%s%s%s\n", $ERR =~ /$filter/, $0, $1, $2, $3, $4);
+  # die (" *********** debug ********");
 }
 
 # hexdump, pass array by ref
