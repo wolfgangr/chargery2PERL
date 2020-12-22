@@ -20,7 +20,7 @@ my $rrd_pack56 = $path_to_rrd . "pack56.rrd";
 my $rrd_pack57 = $path_to_rrd . "pack57.rrd";
 
 # how to match rrd field structure against hash tags
-my $rrd_tpl_cells  = join (":" ,  map { "U" . $_ } (1..$num_cells)  ) ;
+my $rrd_tpl_cells  = join (":" ,  map { sprintf ( "U%02d" , $_) } (1..$num_cells)  ) ;
 # 	U1:U2:U3:...20:21:22
 
 my $rrd_tpl_pack56 = "Vtot:Ah:Wh" ;
@@ -131,8 +131,9 @@ while ($nbytes = read DATAIN, $data, 1) {
       my $res = do_56 ( @datarray );
       debug_print ( 2,  Dumper ($res ));
 
+      # assemble update data for pack part
       debug_printf ( 5, "RRD params %s - %s \n" , $rrd_pack56 , $rrd_tpl_pack56 );
-      # my $update_data = 
+
       my $update_data =  join (':', $now, (@{$res}{@hash_slice_56} ));
       debug_printf ( 3, "RRD data %s\n", $update_data );
       #die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,8 +142,23 @@ while ($nbytes = read DATAIN, $data, 1) {
         my $ERR=RRDs::error;
         # die "ERROR while updating mydemo.rrd: $ERR\n" if $ERR;
         debug_print ( 3, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR;
-
       }
+
+      # assemble update data for cell part
+      debug_printf ( 5, "RRD params %s - %s \n" , $rrd_cells , $rrd_tpl_cells );
+      
+      my $update_data =  join (':', $now, splice ( @{$res->{'cell_volts'}} , 0, $num_cells ) );
+      debug_printf ( 3, "RRD data %s\n", $update_data );
+      # die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      RRDs::update ($rrd_cells, '--template', $rrd_tpl_cells , $update_data ) unless $dryrun ;
+      if ($debug >= 3) {
+        my $ERR=RRDs::error;
+        # die "ERROR while updating mydemo.rrd: $ERR\n" if $ERR;
+        debug_print ( 3, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR;
+      }
+
+
+
 
 die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
