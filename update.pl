@@ -36,7 +36,7 @@ my @hash_slice_57 = qw (current charge_mode EOC_volt SOC Temp1 Temp2);
 # 2 life data report exception
 # 1 config exception
 # 0 no debug by my code
-$debug = 5;
+$debug = 3;
 $dryrun=0; # set to true to avoid rrd updates
 
 #======================
@@ -111,7 +111,7 @@ while ($nbytes = read DATAIN, $data, 1) {
     } 
 
 # ------------- data processing --------------
-
+    my $ERR=0;
     if ( $recentcmd == 0x57 ) {
       debug_printf (4, "\n\tcalling command processor for %02x \n\t",  $recentcmd ) ;
       my $res = do_57 ( @datarray ); 
@@ -123,7 +123,7 @@ while ($nbytes = read DATAIN, $data, 1) {
       debug_printf ( 3, "RRD data %s\n", $update_data );
 
       RRDs::update ($rrd_pack57, '--template', $rrd_tpl_pack57, $update_data ) unless $dryrun ;
-      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if my $ERR=RRDs::error ;
+      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR = RRDs::error ;
 
     } elsif ( $recentcmd == 0x56 ) {
       debug_printf (4, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
@@ -137,7 +137,7 @@ while ($nbytes = read DATAIN, $data, 1) {
       debug_printf ( 3, "RRD data %s\n", $update_data );
 
       RRDs::update ($rrd_pack56, '--template', $rrd_tpl_pack56, $update_data ) unless $dryrun ;
-      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if my $ERR=RRDs::error ;
+      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR=RRDs::error ;
 
       # assemble update data for cell part
       debug_printf ( 5, "RRD params %s - %s \n" , $rrd_cells , $rrd_tpl_cells );
@@ -146,7 +146,7 @@ while ($nbytes = read DATAIN, $data, 1) {
       debug_printf ( 3, "RRD data %s\n", $update_data );
 
       RRDs::update ($rrd_cells, '--template', $rrd_tpl_cells , $update_data ) unless $dryrun ;
-      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if my $ERR=RRDs::error ;
+      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR=RRDs::error ;
 
 
 # die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
