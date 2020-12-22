@@ -29,8 +29,15 @@ my @hash_slice_56 = qw (sum_volts Ah Wh) ;
 my $rrd_tpl_pack57 = "curr:mode:Vend_c:SOC:temp1:temp2" ;
 my @hash_slice_57 = qw (current charge_mode EOC_volt SOC Temp1 Temp2);
 
+# debug level
+# 5 crude code development (data structure details)
+# 4 rough development (program flow overview)
+# 3 life data report normal run
+# 2 life data report exception
+# 1 config exception
+# 0 no debug by my code
 $debug = 5;
-$dryrun=0; 
+$dryrun=0; # set to true to avoid rrd updates
 
 #======================
 #
@@ -82,24 +89,23 @@ while ($nbytes = read DATAIN, $data, 1) {
     $numdbytes = $byte - 4 ; 
     $nbytes = read DATAIN, $data, $numdbytes ;
     if ($nbytes != $numdbytes ) {
-      debug_printf (5, "mismatch reading data - want:%d, got: %d \n", $numdbytes , $nbytes);
+      debug_printf (3, "mismatch reading data - want:%d, got: %d \n", $numdbytes , $nbytes);
       $fieldpos = 0;
       next;
     } 
     # lets hope we got our data in $data
-    # debug_printf (5, " - %d bytes of raw data: \n%s", $nbytes, HexDump $data);
     debug_printf (5, " - %d bytes of raw data: ", $nbytes );
     my @datarray= map (ord, split (undef, $data)); 
     # my own hexdump
-    # print Dumper ( @data, 1,2,3) ;
-    debug_hexdump ( 4, \@datarray );
-    debug_print (4, "\n");
+    debug_hexdump ( 3, \@datarray );
+    debug_print (3, "\n");
+
     # crc check
     $chksum = pop (@datarray);
     $crc = crc_check ($crc, \@datarray );
-    debug_printf (5, "checksum: %02x , cmp %02x ", $chksum, $crc);
+    debug_printf (3, "checksum: %02x , cmp %02x ", $chksum, $crc);
     if ( $chksum != $crc ) {
-      debug_printf (3, "\nchecksum error: %02x != %02x \n", $chksum, $crc);
+      debug_printf (2, "\nchecksum error: %02x != %02x \n", $chksum, $crc);
       $fieldpos =0;
       next;
     } 
@@ -107,9 +113,9 @@ while ($nbytes = read DATAIN, $data, 1) {
 # ------------- data processing --------------
 
     if ( $recentcmd == 0x57 ) {
-      debug_printf (3, "\n\tcalling command processor for %02x \n\t",  $recentcmd ) ;
+      debug_printf (4, "\n\tcalling command processor for %02x \n\t",  $recentcmd ) ;
       my $res = do_57 ( @datarray ); 
-      debug_print ( 2,  Dumper ($res ));
+      debug_print ( 5,  Dumper ($res ));
 
       # assembling rrd data
       debug_printf ( 5, "RRD params %s - %s \n" , $rrd_pack57 , $rrd_tpl_pack57 );
@@ -117,42 +123,30 @@ while ($nbytes = read DATAIN, $data, 1) {
       debug_printf ( 3, "RRD data %s\n", $update_data );
 
       RRDs::update ($rrd_pack57, '--template', $rrd_tpl_pack57, $update_data ) unless $dryrun ;
-      if ($debug >= 3) {
-        my $ERR=RRDs::error;
-	debug_print ( 3, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR;
-
-      }
-
+      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if my $ERR=RRDs::error ;
 
     } elsif ( $recentcmd == 0x56 ) {
-      debug_printf (3, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
+      debug_printf (4, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
       my $res = do_56 ( @datarray );
-      debug_print ( 2,  Dumper ($res ));
+      debug_print ( 5,  Dumper ($res ));
 
       # assemble update data for pack part
       debug_printf ( 5, "RRD params %s - %s \n" , $rrd_pack56 , $rrd_tpl_pack56 );
 
       my $update_data =  join (':', $now, (@{$res}{@hash_slice_56} ));
       debug_printf ( 3, "RRD data %s\n", $update_data );
+
       RRDs::update ($rrd_pack56, '--template', $rrd_tpl_pack56, $update_data ) unless $dryrun ;
-      if ($debug >= 3) {
-        my $ERR=RRDs::error;
-        # die "ERROR while updating mydemo.rrd: $ERR\n" if $ERR;
-        debug_print ( 3, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR;
-      }
+      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if my $ERR=RRDs::error ;
 
       # assemble update data for cell part
       debug_printf ( 5, "RRD params %s - %s \n" , $rrd_cells , $rrd_tpl_cells );
       
       my $update_data =  join (':', $now, splice ( @{$res->{'cell_volts'}} , 0, $num_cells ) );
       debug_printf ( 3, "RRD data %s\n", $update_data );
+
       RRDs::update ($rrd_cells, '--template', $rrd_tpl_cells , $update_data ) unless $dryrun ;
-      if ($debug >= 3) {
-        my $ERR=RRDs::error;
-        debug_print ( 3, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR;
-      }
-
-
+      debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if my $ERR=RRDs::error ;
 
 
 # die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
@@ -160,13 +154,13 @@ while ($nbytes = read DATAIN, $data, 1) {
 
 
     } elsif ( $recentcmd == 0x58 ) {
-      debug_printf (1, "command processor for %02x not yet implemented",  $recentcmd ) ;
+      debug_printf (2, "command processor for %02x not yet implemented",  $recentcmd ) ;
       my $res = do_58 ( @datarray );
-      debug_print ( 2,  Dumper ($res ));
+      debug_print ( 3,  Dumper ($res ));
 
     }
       else  {
-      debug_printf (1, "unknown command %02x - check manual, version, whatever...",  $recentcmd ) ;
+      debug_printf (2, "unknown command %02x - check manual, version, whatever...",  $recentcmd ) ;
     }
 # ---------- end processing ---------------
 
@@ -179,7 +173,7 @@ while ($nbytes = read DATAIN, $data, 1) {
     if ( ($fieldpos ==1) or ($fieldpos ==2 ) ) {
       debug_print (5, "'"); 
     } else {
-      debug_printf (5, "x24-garbage %s at pos %d\n", $hex, $fieldpos) ;
+      debug_printf (3, "x24-garbage %s at pos %d\n", $hex, $fieldpos) ;
       $fieldpos = 0;
     }
   } elsif ( ( $byte == 0x56 ) or  ( $byte == 0x57 ) or ( $byte == 0x58) ) {
@@ -189,7 +183,7 @@ while ($nbytes = read DATAIN, $data, 1) {
       $now = time ;
       debug_print (5, "'");
     } else {
-      debug_printf (5, "x5X-garbage %s at pos %d\n", $hex, $fieldpos) ;
+      debug_printf (3, "x5X-garbage %s at pos %d\n", $hex, $fieldpos) ;
       $fieldpos = 0;
     }
 
@@ -206,7 +200,7 @@ while ($nbytes = read DATAIN, $data, 1) {
     $fieldpos = 0;
 
   } elsif ($fieldpos <= 3) {
-    debug_printf (5, "xXX-garbage %s at pos %d\n", $hex, $fieldpos) ;
+    debug_printf (3, "xXX-garbage %s at pos %d\n", $hex, $fieldpos) ;
     $fieldpos = 0;
 
   } else {
