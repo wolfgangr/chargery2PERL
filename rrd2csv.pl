@@ -6,6 +6,7 @@
 # idie @ARGV
 #
 use Getopt::Std;
+use  RRDs;
 
 # we need at least a rrd file name and a CF
 die "usage $0 db.rrd CF [-s start] [-e end] [-h] [-x sep] [-d delim] " unless $#ARGV >= 1;
@@ -22,3 +23,12 @@ $delim  = $opt_d;
 
 printf STDERR "parameter db=%s CF=%s start=%s end=%s header=%s sep=%s delim=%s \n",
 	$rrdfile, $cf, $start, $end, $header , $sep, $delim      ;
+
+@paramlist = ($rrdfile, $cf, '-s', $start, '-e', $end);
+
+my ($start,$step,$names,$data) = RRDs::fetch (@paramlist);
+
+printf STDERR (" start %d, stop %d, columns %d, rows %d\n\tErr: >%s<\n", 
+       	$start,$step, $#names, $#data, RRDs::error);
+
+
