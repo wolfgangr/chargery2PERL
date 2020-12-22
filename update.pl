@@ -8,8 +8,8 @@
 my $device ="../dev_chargery";
 my $filename =  $device ;
 
-# rrd database locations and rrd field structure
-$num_cells = 22;		# Battery size
+# rrd database locations 
+our $num_cells = 22;		# Battery size
 my $path_to_rrd = `pwd`;
 chomp $path_to_rrd;
 $path_to_rrd .= '/' ;
@@ -19,9 +19,13 @@ my $rrd_cells  = $path_to_rrd . "cells.rrd" ;
 my $rrd_pack56 = $path_to_rrd . "pack56.rrd";
 my $rrd_pack57 = $path_to_rrd . "pack57.rrd";
 
+# how to match rrd field structure against hash tags
 my $rrd_tpl_cells  = join (":" ,  map { "U" . $_ } (1..$num_cells)  ) ;
 # 	U1:U2:U3:...20:21:22
+
 my $rrd_tpl_pack56 = "Vtot:Ah:Wh" ;
+my @hash_slice_56 = qw (sum_volts Ah Wh) ;
+
 my $rrd_tpl_pack57 = "curr:mode:Vend_c:SOC:temp1:temp2" ;
 my @hash_slice_57 = qw (current charge_mode EOC_volt SOC Temp1 Temp2);
 
@@ -131,7 +135,7 @@ while ($nbytes = read DATAIN, $data, 1) {
       # my $update_data = 
       my $update_data =  join (':', $now, (@{$res}{@hash_slice_56} ));
       debug_printf ( 3, "RRD data %s\n", $update_data );
-die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      #die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       RRDs::update ($rrd_pack56, '--template', $rrd_tpl_pack56, $update_data ) unless $dryrun ;
       if ($debug >= 3) {
         my $ERR=RRDs::error;
@@ -140,7 +144,7 @@ die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       }
 
-      # die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
 
 
@@ -215,7 +219,9 @@ print "\n\n    ==================== regular END ===============\n\n";
 exit;
 
 
-#============================================
+#================================================================================
+
+
 # debug_print($level, $content)
 sub debug_print {
   $level = shift @_;
@@ -224,24 +230,17 @@ sub debug_print {
 
 sub debug_printf {
   $level = shift @_;
-  # $formt
   printf STDERR  @_ if ( $level <= $debug) ;
 }
 
 # hexdump, pass array by ref
 sub debug_hexdump {
-    # print Dumper ( @_, 1,2,3) ; 
     $level = shift @_;
     return unless ( $level <= $debug) ;
     $ary = shift @_;
-    # print Dumper ( @$ary ) ;
-
     foreach my $x ( @$ary ) {
       printf STDERR  ( " %02x", $x );
     }
-    # print "--\n";
-    # die "========== debug ==========";
-
 }
 
 # crc_check ( $crcold, \@data )
@@ -252,9 +251,7 @@ sub crc_check {
    foreach my $x ( @$ary ) {
            my $oldcrc = $crc;
            $crc = ($crc + $x ) % 0x100 ;
-	   # printf  ( " %02x - %02x -> %02x \n", $oldcrc,  $x ,  $crc   );
     }
-    #  die "========== debug ==========";
     return $crc;
 }
 
@@ -316,8 +313,9 @@ sub do_56 {
   my $parlen = $#_ +1 ;
   return undef unless $parlen >= 14 ;
 
-  # remove the last 12 bytes for fixed vars, leaving the rest for per cell voltages
-  my @tail12 = splice (@_, -12) ;
+  # remove the last 8 bytes for fixed vars, leaving the rest for per cell voltages
+  # ... we always have 24 voltages
+  my @tail12 = splice (@_, -8) ;
 
   # process the tail, we are not sure about the association of the extra field
   my $Wh = big_endian( splice (@tail12 , 0 , 4 ) ) / 1000 ;
