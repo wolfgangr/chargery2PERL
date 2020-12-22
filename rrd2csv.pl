@@ -1,10 +1,77 @@
 #!/usr/bin/perl
 #
 # extract data from rrd and write csv data
-# usage plan: rrd2csv.pl db CF from to header sep delim
-#
-# idie @ARGV
-#
+
+our $usage <<"EOF_USAGE";
+usage: $0 db.rrd CF
+  [-s start][-e end][-r res][-a]  [-V valid-rows ]
+  [-f outfile][-x sep][-d delim][-h][-H][-M]     [-?]
+EOF_USAGE
+
+
+
+our $usage_long = <<"EOF_USAGE_L";
+$0:
+
+retrieve data from RRD and output them as CSV to file or STDOUT
+
+$usage 
+
+	for further details, see RRDtool fetch for details
+	
+	db.rrd	
+		rrd file name to retrieve data from
+
+	CF	rrd CF (AVERAGE,MIN,MAX,LAST)
+
+	-s starttime
+		transparently forwarded to RRDtool, 
+		default NOW - 1 day
+
+	-e endtime
+		transparently forwarded to RRDtool,
+		default NOW
+	
+	-r res 
+		resolution (seconds per value)
+		default is highest available in rrd
+
+	-a align
+		adjust starttime to resolution
+
+	-V valid rows
+		preselect rows by NaN'niness
+		(integer) minimum valid fields i.e not NaN per row
+		0 - include all empty (NaN only) rows
+		1 - (default ) at least one not-NaN - don't loose any information
+		up to num-cols - fine tune information vs data throughput
+		negative integers: complement count top down e.g.
+		-1 - zero NaN allowed
+		-2 - one NaN allowed
+
+		        [-f outfile] [-h] [-H] [-x sep] [-d delim]
+
+	-f output file
+		default ist STDOUT if omitted
+
+	-x \;	CSV field separator, default is  ';'
+
+	-d \"	CSV field delimiter, default is ''
+
+	-h	include header line
+
+	-H	translate unixtime to H_uman readable time
+	-M	translate unixtime to M_ySQL timestamps
+
+	-v	set verbosity level
+
+	-h	print this message
+
+EOF_USAGE_L
+
+
+
+
 use Getopt::Std;
 use  RRDs;
 use DateTime;
@@ -15,11 +82,12 @@ use Data::Dumper  ;
 our $debug =3;
 
 # we need at least a rrd file name and a CF
-die "usage $0 db.rrd CF [-s start] [-e end] [-r res] [-a] [-f outfile] [-h] [-x sep] [-d delim] " unless $#ARGV >= 1;
+die "$usage" unless $#ARGV >= 1;
+
 my $rrdfile = shift @ARGV;
 my $cf      = shift @ARGV;
 
-getopts('s:e:hx:d:r:af:');
+getopts('s:e:hx:d:r:af:HMv:V:h');
 
 $start  = $opt_s || 'e-1d';
 $end    = $opt_e || 'N';
