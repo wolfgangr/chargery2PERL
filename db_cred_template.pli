@@ -1,0 +1,7 @@
+# DB credentials
+  $datapath  = 'where/your/data/lives";
+  $DBHost    = 'your.host.IP';
+  $database  = 'sloarlog';
+  $user      = 'solarlog-writer';
+  $passwd    = 'verySecretQWFY';
+
