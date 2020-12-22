@@ -8,11 +8,24 @@
 my $device ="../dev_chargery";
 my $filename =  $device ;
 
+# rrd database locations and rrd field structure
+my $path_to_rrd = "~/chargery/rrd)";
+my $rrd_cells  = $path_to_rrd . "cells.rrd" ;
+my $rrd_pack56 = $path_to_rrd . "pack56.rrd";
+my $rrd_pack57 = $path_to_rrd . "pack57.rrd";
 
-# $debug = 6;
+my $rrd_tpl_cells  = "" ;
+my $rrd_tpl_pack56 = "Vtot:Ah:Wh" ;
+my $rrd_tpl_pack57 = "curr:mode:Vend_c:SOC:temp1:temp2" ;
+
+
+$debug = 5;
+$dryrun=1; 
+
 #======================
 #
 
+use RRDs ;
 use Data::HexDump;
 # use String::Dump qw( dump_hex);
 # use Data::Dump::OneLine;
@@ -34,7 +47,6 @@ my $status =0;
 my $fieldpos =0;
 my $crc = 0;
 my $recentcmd =0 ;
-$debug = 5;
 
 while ($nbytes = read DATAIN, $data, 1) {
 

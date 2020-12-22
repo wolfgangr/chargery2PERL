@@ -5,7 +5,7 @@
 # so I can modify manually
 # and keep it as reference for data structure
 #
-$target = "create_pack_rrd.sh";
+$target = "create_pack57_rrd.sh";
 
 
 $num_cells = 22;		# Battery size
@@ -36,7 +36,7 @@ my $cmd = <<'HEAD';
 HEAD
 
 $cmd .= "# $0 $nl";
-$cmd .= "$rrdtool create pack.rrd --start NOW"; 
+$cmd .= "$rrdtool create pack57.rrd --start NOW"; 
 $cmd .= sprintf (" --step %d ", $step );
 $cmd .=  $nl;
 
