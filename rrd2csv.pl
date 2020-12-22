@@ -27,7 +27,7 @@ $sep    = $opt_x;
 $delim  = $opt_d;
 $align  = $opt_a;
 $res    = $opt_r;
-$outfile = $opt_f || '-';
+$outfile = $opt_f ;
 
 debug_printf (3, "parameter db=%s CF=%s start=%s end=%s resolution=%s align=%d output=%s header=%s sep=%s delim=%s \n",
 	$rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      );
@@ -52,16 +52,24 @@ debug_printf ( 3, "retrieved, \n start %s step %d, columns %d, rows %d\n\tErr: >
 
 
 # ---- go to work ----
-
-open (OUT , '>' , $outfile)  or die "$! \n could not open $outfile for writing"; 
+# $outfile = '|-' unless  $outfile ;   # this seems to write to STDOUT
+if ( $outfile) {
+  open (OF , '>' ,   $outfile)  or die "$! \n could not open $outfile for writing"; 
+} else {
+  # iopen (OF , '|-') or die "$! \n could not access STDOUT for writing";
+  *OF = *STDOUT;
+}
 
 debug_printf ( 3, "opened output file: %s\n", $outfile ); 
 
-if ($header) {
-
+if ($header) { 
+   $titleline = my_join ( $delim, $sep, 'time', @$names) ;
+   # debug_printf ( 3, "%s\n", $titleline );
+   print  OF $titleline . "\n";
+   # print  OF " stuff\n";
 }
 
-close OUT ;
+close OF ;
 
 exit ;
 
@@ -75,4 +83,16 @@ sub debug_print {
 sub debug_printf {
   $level = shift @_;
   printf STDERR  @_ if ( $level <= $debug) ;
+}
+
+# my_join : extended join with delim and seperators
+# my_join ( delim, sep, @stuff )
+sub my_join {
+  my $delim = shift  @_ ;
+  my $sep   = shift  @_ ;
+  # printf ( "%s %s %s\n",  $delim , $sep  , join (":", @_ )) ;
+  my $rv  =   return join ( $sep, map { sprintf ( "%s%s%s", $delim, $_ ,$delim) } @_ ) ;
+  return $rv ;
+  # print $rv . "\n";
+  # die "debug"
 }
