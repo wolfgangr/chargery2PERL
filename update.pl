@@ -20,10 +20,10 @@ my $rrd_tpl_cells  = join (":" ,  map { "U" . $_ } (1..$num_cells)  ) ;
 # 	U1:U2:U3:...20:21:22
 my $rrd_tpl_pack56 = "Vtot:Ah:Wh" ;
 my $rrd_tpl_pack57 = "curr:mode:Vend_c:SOC:temp1:temp2" ;
+my @hash_slice_57 = qw (current charge_mode EOC_volt SOC Temp1 Temp2);
 
-
-$debug = 5;
-$dryrun=1; 
+$debug = 3;
+$dryrun=0; 
 
 #======================
 #
@@ -99,13 +99,16 @@ while ($nbytes = read DATAIN, $data, 1) {
 # ------------- data processing --------------
 
     if ( $recentcmd == 0x57 ) {
-      debug_printf (3, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
+      debug_printf (3, "\n\tcalling command processor for %02x \n\t",  $recentcmd ) ;
       my $res = do_57 ( @datarray ); 
       debug_print ( 2,  Dumper ($res ));
       # my $update_data = join (':', (@res($hash_slice_57) ));
-      debug_printf ( 5, "RRD params %s - %s - %s " , $rrd_pack57 , $rrd_tpl_pack57, $hash_slice_57 );
-      my $update_data = join (':', (@res{$hash_slice_57} ));
-      debug_printf ( 3, "RRD data %s", $update_data );
+      debug_printf ( 5, "RRD params %s - %s \n" , $rrd_pack57 , $rrd_tpl_pack57 );
+      # my $update_data = 
+      my $update_data = join (':', (@{$res}{@hash_slice_57} ));
+      debug_printf ( 3, "RRD data %s\n", $update_data );
+
+      RRDs::update ($rrd_pack57, '-t', $rrd_tpl_pack57, $update_data ) unless $dryrun ;
 
 die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
