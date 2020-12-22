@@ -100,6 +100,7 @@ die "$usage_long" if $opt_h  ;
 my $start  = $opt_s || 'e-1d';
 my $end    = $opt_e || 'N';
 my $header = $opt_t;
+my $hl_timetag = $opt_T || 'time' ;
 my $sep    = $opt_x;
 my $delim  = $opt_d;
 my $align  = $opt_a;
@@ -143,7 +144,7 @@ debug_printf ( 3, "opened output file: %s\n", $outfile );
 # conditional header
 #
 if ($header) { 
-   my $titleline = my_join ( $delim, $sep, 'time', @$names) ;
+   my $titleline = my_join ( $delim, $sep, $hl_timetag , @$names) ;
    print  OF $titleline . "\n";
 }
 
