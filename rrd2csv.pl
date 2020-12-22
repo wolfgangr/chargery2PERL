@@ -72,19 +72,17 @@ $usage
 EOF_USAGE_L
 
 
-
+# real stuff starting here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 
 use Getopt::Std;
 use  RRDs;
 use DateTime;
 use Data::Dumper  ;
-# use POSIX qw(strftime);
 
 
-our $debug =0;
+our $debug =0; 	# default, overwritten by -v option
 
 # we need at least a rrd file name and a CF
-# die "$usage" unless $#ARGV >= 1;
 
 my $rrdfile = shift @ARGV;
 my $cf      = shift @ARGV;
@@ -97,8 +95,8 @@ die "$usage" unless ($retval) ;
 
 die "$usage_long" if $opt_h  ;
 
-my $start  = $opt_s ; # || 'e-1d';
-my $end    = $opt_e ; # || 'now';
+my $start  = $opt_s  || 'e-1d';
+my $end    = $opt_e  || 'n';
 my $header = $opt_t;
 my $hl_timetag = $opt_T || 'time' ;
 my $sep    = $opt_x;
@@ -115,37 +113,28 @@ unless  ($opt_V eq '') {  $valid_rows = $opt_V ;  }
 debug_printf (3, "parameter db=%s CF=%s start=%s end=%s resolution=%s align=%d output=%s header=%s sep=%s delim=%s \n",
 	$rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      );
 
-# @paramlist = ($rrdfile, $cf, '-s', $start, '-e', $end);
-@paramlist = ($rrdfile , $cf);
-
-push @paramlist, sprintf ("end='%s'", $end ) if $end  ;
-push @paramlist, sprintf ("start='%s'", $start) if $start  ;
+# collect parameters for database call
+@paramlist = ($rrdfile, $cf, '-s', $start, '-e', $end);
 push @paramlist, '-a' if $align ;
 push @paramlist, ('-r', $res ) if $res ; 
-my $paramstring = join ( ' ', @paramlist);
 
 debug_printf (3, "%s\n", join ( ' | ', @paramlist));
-# debug_printf (3, "%s\n", $paramstring);
 
-
-# my ($start,$step,$names,$data) = RRDs::fetch ($paramstring);
+# ====== call the database ========
 my ($start,$step,$names,$data) = RRDs::fetch (@paramlist);
 
-
-# my $startstring = strftime "%c" , $start ; # if ($start ;)
-
+# nice time formating - for debug and for exercise...
 my $dt = DateTime->from_epoch( epoch => $start );
-# my $startstring = $dt->ymd('-') . ' ' . $dt->hms(':') ;
-
 debug_printf ( 3, "retrieved, \n start %s step %d, columns %d, rows %d\n\tErr: >%s<\n", 
        	$dt->datetime('_'),
 	$step, $#$names, $#$data, RRDs::error);
 
+# pre-process -V option ... valid rows - map the complement format
 if ( $valid_rows < 0 ) { $valid_rows = $#$names + $valid_rows +1 ; }
 
 debug_printf (3, "total cols: %d - lower limit for valid Data points per row : %d \n ", $#$names , $valid_rows );
 
-# ---- go to work ----
+# ---- do your work ----
 #
 if ( $outfile) {
   open (OF , '>' ,   $outfile)  or die "$! \n could not open $outfile for writing"; 
@@ -156,23 +145,21 @@ if ( $outfile) {
 
 debug_printf ( 3, "opened output file: %s\n", $outfile ); 
 
-# conditional header
+# conditional header - see -t option
 #
 if ($header) { 
    my $titleline = my_join ( $delim, $sep, $hl_timetag , @$names) ;
    print  OF $titleline . "\n";
 }
 
-# my $rowtime = $start;
-# foreach my $datarow ( @$data ) {
+# main loop over data rows, we count by index to keep close to metal
 for my $rowcnt (0 .. $#$data ) {
-   my $datarow = $$data[ $rowcnt ];
-   my $rowtime = $start + $rowcnt * $step;
-   # check for empty data row
-   # foreach (@cell_volts) { $pack_volts += $_ ; }
+   my $datarow = $$data[ $rowcnt ];			# the real data
+   my $rowtime = $start + $rowcnt * $step;		# time is calculated
+
+   # skip for data row's with too many NaN s
    my $defcnt = 0 ;
    foreach ( @$datarow )  {  $defcnt++ if defined $_ }
-
    next unless ($defcnt >= $valid_rows) ;
 
    # time string format selection
@@ -190,16 +177,9 @@ for my $rowcnt (0 .. $#$data ) {
    }
 
    my $dataline = my_join ( $delim, $sep, $timestring, @$datarow ) ;
-   # $rowtime += $step ;
    print  OF $dataline . "\n";
-   # print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
-   # print Dumper ($datarow );
-   # print Dumper ($dataline);
-   # die "debug~~~~~~~~~~~~~~~~~~~~~~~~~~~";
 
 } 
-
-# 
 
 close OF if ( $outfile) ;
 
@@ -222,9 +202,6 @@ sub debug_printf {
 sub my_join {
   my $delim = shift  @_ ;
   my $sep   = shift  @_ ;
-  # printf ( "%s %s %s\n",  $delim , $sep  , join (":", @_ )) ;
   my $rv  =   return join ( $sep, map { sprintf ( "%s%s%s", $delim, $_ ,$delim) } @_ ) ;
   return $rv ;
-  # print $rv . "\n";
-  # die "debug"
 }
