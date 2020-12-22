@@ -10,8 +10,11 @@ my $filename =  $device ;
 
 # rrd database locations and rrd field structure
 $num_cells = 22;		# Battery size
-
-my $path_to_rrd = "~/chargery/rrd/)";
+my $path_to_rrd = `pwd`;
+chomp $path_to_rrd;
+$path_to_rrd .= '/' ;
+# my $path_to_rrd .= "~/chargery/rrd/";
+# my $path_to_rrd = "";
 my $rrd_cells  = $path_to_rrd . "cells.rrd" ;
 my $rrd_pack56 = $path_to_rrd . "pack56.rrd";
 my $rrd_pack57 = $path_to_rrd . "pack57.rrd";
@@ -22,7 +25,7 @@ my $rrd_tpl_pack56 = "Vtot:Ah:Wh" ;
 my $rrd_tpl_pack57 = "curr:mode:Vend_c:SOC:temp1:temp2" ;
 my @hash_slice_57 = qw (current charge_mode EOC_volt SOC Temp1 Temp2);
 
-$debug = 3;
+$debug = 5;
 $dryrun=0; 
 
 #======================
@@ -50,6 +53,7 @@ my $status =0;
 my $fieldpos =0;
 my $crc = 0;
 my $recentcmd =0 ;
+my $now ;
 
 while ($nbytes = read DATAIN, $data, 1) {
 
@@ -105,12 +109,18 @@ while ($nbytes = read DATAIN, $data, 1) {
       # my $update_data = join (':', (@res($hash_slice_57) ));
       debug_printf ( 5, "RRD params %s - %s \n" , $rrd_pack57 , $rrd_tpl_pack57 );
       # my $update_data = 
-      my $update_data = join (':', (@{$res}{@hash_slice_57} ));
+      my $update_data =  join (':', $now, (@{$res}{@hash_slice_57} ));
       debug_printf ( 3, "RRD data %s\n", $update_data );
 
-      RRDs::update ($rrd_pack57, '-t', $rrd_tpl_pack57, $update_data ) unless $dryrun ;
+      RRDs::update ($rrd_pack57, '--template', $rrd_tpl_pack57, $update_data ) unless $dryrun ;
+      if ($debug >= 3) {
+        my $ERR=RRDs::error;
+	# die "ERROR while updating mydemo.rrd: $ERR\n" if $ERR;
+	debug_print ( 3, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR;
 
-die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+      }
+
+      # die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
     } elsif ( $recentcmd == 0x56 ) {
       debug_printf (3, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
@@ -144,6 +154,7 @@ die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     if  ($fieldpos ==3 ) {
       # memorize state for further processing
       $recentcmd = $byte;
+      $now = time ;
       debug_print (5, "'");
     } else {
       debug_printf (5, "x5X-garbage %s at pos %d\n", $hex, $fieldpos) ;
