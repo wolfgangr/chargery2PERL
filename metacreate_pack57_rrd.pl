@@ -42,11 +42,11 @@ $cmd .=  $nl;
 
 $cmd .= "DS:curr:GAUGE:10:-500:500 $nl";
 $cmd .= "DS:mode:GAUGE:10:0:2 $nl";
-$cmd .= "DS:Vtot:GAUGE:10:0:80 $nl";
+# $cmd .= "DS:Vtot:GAUGE:10:0:80 $nl";
 $cmd .= "DS:Vend_c:GAUGE:10:0:4 $nl";
 $cmd .= "DS:SOC:GAUGE:10:0:100 $nl";
-$cmd .= "DS:Ah:GAUGE:10:-100:1000 $nl";
-$cmd .= "DS:Wh:GAUGE:10:-1000:50000 $nl";
+# $cmd .= "DS:Ah:GAUGE:10:-100:1000 $nl";
+# $cmd .= "DS:Wh:GAUGE:10:-1000:50000 $nl";
 $cmd .= "DS:temp1:GAUGE:60:-30:100 $nl";
 $cmd .= "DS:temp2:GAUGE:60:-30:100 $nl";
 
