@@ -160,9 +160,11 @@ foreach my $datarow ( @$data ) {
    # time string format selection
    my $timestring;
    if ( $opt_M ) {
+      # mysql datetime format YYYY-MM-DD HH:MM:SS
       my $dt =  DateTime->from_epoch( epoch => $rowtime );
-      $timestring =  $dt->datetime('_');
+      $timestring =  sprintf ( "%s %s", $dt->ymd('-') , $dt->hms(':') ) ;
    } elsif ( $opt_H ) {
+      # human readable datetime e.g. 22.12.2020-05:00:00 , i.e. dd.mm.yy-hh:mm:ss
       my $dt =  DateTime->from_epoch( epoch => $rowtime );
       $timestring =  sprintf ( "%s-%s", $dt->dmy('.') , $dt->hms );
    } else {
