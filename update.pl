@@ -110,21 +110,19 @@ while ($nbytes = read DATAIN, $data, 1) {
       debug_printf (3, "\n\tcalling command processor for %02x \n\t",  $recentcmd ) ;
       my $res = do_57 ( @datarray ); 
       debug_print ( 2,  Dumper ($res ));
-      # my $update_data = join (':', (@res($hash_slice_57) ));
+
+      # assembling rrd data
       debug_printf ( 5, "RRD params %s - %s \n" , $rrd_pack57 , $rrd_tpl_pack57 );
-      # my $update_data = 
       my $update_data =  join (':', $now, (@{$res}{@hash_slice_57} ));
       debug_printf ( 3, "RRD data %s\n", $update_data );
 
       RRDs::update ($rrd_pack57, '--template', $rrd_tpl_pack57, $update_data ) unless $dryrun ;
       if ($debug >= 3) {
         my $ERR=RRDs::error;
-	# die "ERROR while updating mydemo.rrd: $ERR\n" if $ERR;
 	debug_print ( 3, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR;
 
       }
 
-      # die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
     } elsif ( $recentcmd == 0x56 ) {
       debug_printf (3, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
@@ -136,7 +134,6 @@ while ($nbytes = read DATAIN, $data, 1) {
 
       my $update_data =  join (':', $now, (@{$res}{@hash_slice_56} ));
       debug_printf ( 3, "RRD data %s\n", $update_data );
-      #die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       RRDs::update ($rrd_pack56, '--template', $rrd_tpl_pack56, $update_data ) unless $dryrun ;
       if ($debug >= 3) {
         my $ERR=RRDs::error;
@@ -149,18 +146,16 @@ while ($nbytes = read DATAIN, $data, 1) {
       
       my $update_data =  join (':', $now, splice ( @{$res->{'cell_volts'}} , 0, $num_cells ) );
       debug_printf ( 3, "RRD data %s\n", $update_data );
-      # die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       RRDs::update ($rrd_cells, '--template', $rrd_tpl_cells , $update_data ) unless $dryrun ;
       if ($debug >= 3) {
         my $ERR=RRDs::error;
-        # die "ERROR while updating mydemo.rrd: $ERR\n" if $ERR;
         debug_print ( 3, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR;
       }
 
 
 
 
-die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+# die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
 
 
