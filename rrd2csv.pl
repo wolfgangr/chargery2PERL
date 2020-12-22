@@ -8,6 +8,7 @@
 use Getopt::Std;
 use  RRDs;
 use DateTime;
+use Data::Dumper  ;
 # use POSIX qw(strftime);
 
 
@@ -71,10 +72,22 @@ if ($header) {
 
 my $rowtime = $start;
 foreach my $datarow ( @$data ) {
+   # check for empty data row
+   # foreach (@cell_volts) { $pack_volts += $_ ; }
+   my $defcnt = 0 ;
+   foreach ( @$datarow )  {  $defcnt++ if defined $_ }
+
+   next unless $defcnt;
+
+
    my $timestring = sprintf "%s" , $rowtime ;
    my $dataline = my_join ( $delim, $sep, $timestring, @$datarow ) ;
    $rowtime += $step ;
    print  OF $dataline . "\n";
+   # print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+   # print Dumper ($datarow );
+   # print Dumper ($dataline);
+   # die "debug~~~~~~~~~~~~~~~~~~~~~~~~~~~";
 
 } 
 
