@@ -36,7 +36,7 @@ my @hash_slice_57 = qw (current charge_mode EOC_volt SOC Temp1 Temp2);
 # 2 life data report exception
 # 1 config exception
 # 0 no debug by my code
-$debug = 3;
+$debug = 2;
 $dryrun=0; # set to true to avoid rrd updates
 
 #======================
@@ -89,7 +89,7 @@ while ($nbytes = read DATAIN, $data, 1) {
     $numdbytes = $byte - 4 ; 
     $nbytes = read DATAIN, $data, $numdbytes ;
     if ($nbytes != $numdbytes ) {
-      debug_printf (3, "mismatch reading data - want:%d, got: %d \n", $numdbytes , $nbytes);
+      debug_printf (2, "mismatch reading data - want:%d, got: %d \n", $numdbytes , $nbytes);
       $fieldpos = 0;
       next;
     } 
@@ -177,7 +177,7 @@ while ($nbytes = read DATAIN, $data, 1) {
     if ( ($fieldpos ==1) or ($fieldpos ==2 ) ) {
       debug_print (5, "'"); 
     } else {
-      debug_printf (3, "x24-garbage %s at pos %d\n", $hex, $fieldpos) ;
+      debug_printf (2, "x24-garbage %s at pos %d\n", $hex, $fieldpos) ;
       $fieldpos = 0;
     }
   } elsif ( ( $byte == 0x56 ) or  ( $byte == 0x57 ) or ( $byte == 0x58) ) {
@@ -187,7 +187,7 @@ while ($nbytes = read DATAIN, $data, 1) {
       $now = time ;
       debug_print (5, "'");
     } else {
-      debug_printf (3, "x5X-garbage %s at pos %d\n", $hex, $fieldpos) ;
+      debug_printf (2, "x5X-garbage %s at pos %d\n", $hex, $fieldpos) ;
       $fieldpos = 0;
     }
 
@@ -204,7 +204,7 @@ while ($nbytes = read DATAIN, $data, 1) {
     $fieldpos = 0;
 
   } elsif ($fieldpos <= 3) {
-    debug_printf (3, "xXX-garbage %s at pos %d\n", $hex, $fieldpos) ;
+    debug_printf (2, "xXX-garbage %s at pos %d\n", $hex, $fieldpos) ;
     $fieldpos = 0;
 
   } else {
