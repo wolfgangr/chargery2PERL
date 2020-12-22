@@ -108,6 +108,10 @@ my $res    = $opt_r;
 my $outfile = $opt_f ;
 $debug = $opt_v unless $opt_v eq ''; 
 
+my $valid_rows = 1 ;
+unless  ($opt_V eq '') {  $valid_rows = $opt_V ;  }
+
+
 debug_printf (3, "parameter db=%s CF=%s start=%s end=%s resolution=%s align=%d output=%s header=%s sep=%s delim=%s \n",
 	$rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      );
 
@@ -137,6 +141,9 @@ debug_printf ( 3, "retrieved, \n start %s step %d, columns %d, rows %d\n\tErr: >
        	$dt->datetime('_'),
 	$step, $#$names, $#$data, RRDs::error);
 
+if ( $valid_rows < 0 ) { $valid_rows = $#$names + $valid_rows +1 ; }
+
+debug_printf (3, "total cols: %d - lower limit for valid Data points per row : %d \n ", $#$names , $valid_rows );
 
 # ---- go to work ----
 #
@@ -163,7 +170,7 @@ foreach my $datarow ( @$data ) {
    my $defcnt = 0 ;
    foreach ( @$datarow )  {  $defcnt++ if defined $_ }
 
-   # next unless $defcnt;
+   next unless ($defcnt >= $valid_rows) ;
 
    # time string format selection
    my $timestring;
