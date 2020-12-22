@@ -9,12 +9,15 @@ my $device ="../dev_chargery";
 my $filename =  $device ;
 
 # rrd database locations and rrd field structure
-my $path_to_rrd = "~/chargery/rrd)";
+$num_cells = 22;		# Battery size
+
+my $path_to_rrd = "~/chargery/rrd/)";
 my $rrd_cells  = $path_to_rrd . "cells.rrd" ;
 my $rrd_pack56 = $path_to_rrd . "pack56.rrd";
 my $rrd_pack57 = $path_to_rrd . "pack57.rrd";
 
-my $rrd_tpl_cells  = "" ;
+my $rrd_tpl_cells  = join (":" ,  map { "U" . $_ } (1..$num_cells)  ) ;
+# 	U1:U2:U3:...20:21:22
 my $rrd_tpl_pack56 = "Vtot:Ah:Wh" ;
 my $rrd_tpl_pack57 = "curr:mode:Vend_c:SOC:temp1:temp2" ;
 
@@ -93,13 +96,19 @@ while ($nbytes = read DATAIN, $data, 1) {
       next;
     } 
 
-    # data processing
-    #------ end processing
+# ------------- data processing --------------
 
     if ( $recentcmd == 0x57 ) {
       debug_printf (3, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
       my $res = do_57 ( @datarray ); 
       debug_print ( 2,  Dumper ($res ));
+      # my $update_data = join (':', (@res($hash_slice_57) ));
+      debug_printf ( 5, "RRD params %s - %s - %s " , $rrd_pack57 , $rrd_tpl_pack57, $hash_slice_57 );
+      my $update_data = join (':', (@res($hash_slice_57) ));
+      debug_printf ( 3, "RRD data %s", $update_data );
+
+die ("=========== DEBUG stop ============="); # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+
     } elsif ( $recentcmd == 0x56 ) {
       debug_printf (3, "\n\tcalling command processor for %02x ",  $recentcmd ) ;
       my $res = do_56 ( @datarray );
@@ -114,6 +123,7 @@ while ($nbytes = read DATAIN, $data, 1) {
       else  {
       debug_printf (1, "unknown command %02x - check manual, version, whatever...",  $recentcmd ) ;
     }
+# ---------- end processing ---------------
 
     $fieldpos =0;
     next;
