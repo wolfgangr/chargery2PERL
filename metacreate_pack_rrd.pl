@@ -64,6 +64,8 @@ print TARGET $cmd;
 close TARGET;
 print "$target written\n";
 
+print ` chmod +x $target`;
+
 exit;
 
 # --------------------------
