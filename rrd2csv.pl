@@ -5,7 +5,7 @@
 our $usage <<"EOF_USAGE";
 usage: $0 db.rrd CF
   [-s start][-e end][-r res][-a]  [-V valid-rows ]
-  [-f outfile][-x sep][-d delim][-h][-H][-M]     [-?]
+  [-f outfile][-x sep][-d delim][-t][-T dttag][-H][-M]     [-h]
 EOF_USAGE
 
 
@@ -58,12 +58,14 @@ $usage
 
 	-d \"	CSV field delimiter, default is ''
 
-	-h	include header line
+	-t	include header tag line
+
+	-T foo	header line time tag, default ist 'time'
 
 	-H	translate unixtime to H_uman readable time
 	-M	translate unixtime to M_ySQL timestamps
 
-	-v	set verbosity level
+	-v int	set verbosity level
 
 	-h	print this message
 
@@ -87,11 +89,11 @@ die "$usage" unless $#ARGV >= 1;
 my $rrdfile = shift @ARGV;
 my $cf      = shift @ARGV;
 
-getopts('s:e:hx:d:r:af:HMv:V:h');
+getopts('s:e:tx:d:r:af:HMv:V:h');
 
 $start  = $opt_s || 'e-1d';
 $end    = $opt_e || 'N';
-$header = $opt_h;
+$header = $opt_t;
 $sep    = $opt_x;
 $delim  = $opt_d;
 $align  = $opt_a;
