@@ -1,5 +1,8 @@
 #!/usr/bin/perl
 # crude hack to create tables
+#
+# https://perldoc.perl.org/perldsc#Declaration-of-a-HASH-OF-ARRAYS
+
 our $num_cells = 22;
 
 our %table_defs = ( 
@@ -58,3 +61,14 @@ my $tabdef_tail = <<"EOF_TDTAIL";
 /*!40101 SET character_set_client = \@saved_cs_client */;
 EOF_TDTAIL
 
+#=============== pull the stuff apart
+
+# cycle over tables
+foreach $table ( keys %table_defs ) {
+  print STDERR "building  table  $table \n"; 
+  my $tbd = $table_defs{$table};
+  print STDERR "sequence = $tbd->{'seq' }   \n";
+  # print STDERR Dumper $tbd ;
+
+
+}
