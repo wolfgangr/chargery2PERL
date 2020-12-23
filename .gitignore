@@ -8,3 +8,5 @@ test.log*
 create_*_rrd.sh
 *.csv
 *.sql
+secret.pwd
+tmp/*
