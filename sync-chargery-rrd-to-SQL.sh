@@ -27,9 +27,8 @@ for TAG in cells pack56 pack57
 	#	--ignore-lines=1   --fields-terminated-by=';'   -d   chargery 'maria1.csv'
 
   	mysqlimport -h $HOST -u $USER -p$PASSWD  --local \
-		--replace --force \
+		--ignore --force \
 		--ignore-lines=1 --fields-terminated-by=';' \
-		chargery $TMPFILE
-
+		chargery $TEMPFILE
   done
 
