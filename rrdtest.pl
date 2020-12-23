@@ -64,10 +64,19 @@ foreach $arg (@ARGV ) {
 		next;
 	}
 	# if succesful 'til here, we have the 2nd line splitted in the regexp backrefs	
+	my $restofline = $2;
+
 	my $lastupdate = $1 ;
 	my $datetimestr = mydatetime($lastupdate) ;
-	my $restofline = $2;
-	my $okstring = 'no clue' ;
+	my $lagtime = $now - $lastupdate ;
+
+	my $okstring;
+	if ($lagtime > $gracetime ) {
+		$okstring =  sprintf "!!! (%ds)", $lagtime ;
+		$errcnt ++ ;
+	} else {
+		$okstring = sprintf "OK  (%ds)", $lagtime ;
+	}
 
 	# render the user friendly part
 	printf "--- [ %s ] ---------------------------------  \n\t%s \t| %s\n", 
