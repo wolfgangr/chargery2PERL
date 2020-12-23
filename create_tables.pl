@@ -43,10 +43,13 @@ use Data::Dumper;
 
 print STDERR Dumper( \%table_defs ) ;
 
+my $outer_head = <<"EOF_OHEAD";
+/*!40101 SET character_set_client = utf8 */;
+
+EOF_OHEAD
 
 my $tabdef_head = <<"EOF_TDHEAD";
-/*!40101 SET \@saved_cs_client     = \@@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `%s`;
 CREATE TABLE `%s` (
   `time` datetime NOT NULL,
 EOF_TDHEAD
@@ -59,12 +62,15 @@ my $tabdef_tail = <<"EOF_TDTAIL";
   `update_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
   PRIMARY KEY (`time`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii ;
-/*!40101 SET character_set_client = \@saved_cs_client */;
+
 EOF_TDTAIL
 
 #=============== pull the stuff apart
 
 print STDERR "========== start parsing data tree \n ==========";
+
+# prelude
+print $outer_head;
 
 # cycle over tables
 foreach my $table ( 
@@ -77,7 +83,7 @@ foreach my $table (
   # print STDERR Dumper $tbd ;
 
   # do the real thing - fill with table name
-  printf $tabdef_head, $table ;
+  printf $tabdef_head, $table, $table ;
 
   # cycle over rows
   foreach my $trow ( 
