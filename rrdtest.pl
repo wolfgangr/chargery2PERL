@@ -13,6 +13,7 @@
 
 our $rrdtool = `which rrdtool   `;
 our $dtformat = '+\'%F %T\'' ; # datetime format string for console `date`
+our $now = mynow() ;
 
 my $firstparam = $ARGV[0] ;
 
@@ -24,7 +25,13 @@ if ( $firstparam   =~ /^\d+$/ ) {
 	$gracetime = 60 ;
 }
 
-printf "gracetime: %s \n", $gracetime ;
+
+printf "gracetime: %s , now: %s, diff: %s \n", 
+	$gracetime , mydatetime($now) , mydatetime($now - $gracetime ) ;
+
+
+
+# ~~~~ loop over rrds ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 
 my $errcnt = 0;
 
@@ -60,7 +67,6 @@ foreach $arg (@ARGV ) {
 	}
 	# if succesful 'til here, we have the 2nd line splitted in the regexp backrefs	
 	$datetimestr = mydatetime($1) ;
-		chomp $datetimestr ;
 	$restofline = $2;
 	$okstring = 'no clue' ;
 
@@ -77,5 +83,13 @@ exit ;
 sub mydatetime {
   my $arg = shift;
   my $rv =`date -d \@$arg $dtformat` ;
+  chomp $rv;
   return $rv ;
+}
+
+sub mynow {
+  my $rv = `date \+\%s`;
+  chomp $rv;
+  return $rv ;
+
 }
