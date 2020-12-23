@@ -25,11 +25,9 @@ if ( $firstparam   =~ /^\d+$/ ) {
 	$gracetime = 60 ;
 }
 
-
-printf "gracetime: %s , now: %s, diff: %s \n", 
+# info header line
+printf "===    gracetime: %s    =    now: %s    =    diff: %s    ===\n", 
 	$gracetime , mydatetime($now) , mydatetime($now - $gracetime ) ;
-
-
 
 # ~~~~ loop over rrds ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 
@@ -66,9 +64,10 @@ foreach $arg (@ARGV ) {
 		next;
 	}
 	# if succesful 'til here, we have the 2nd line splitted in the regexp backrefs	
-	$datetimestr = mydatetime($1) ;
-	$restofline = $2;
-	$okstring = 'no clue' ;
+	my $lastupdate = $1 ;
+	my $datetimestr = mydatetime($lastupdate) ;
+	my $restofline = $2;
+	my $okstring = 'no clue' ;
 
 	# render the user friendly part
 	printf "--- [ %s ] ---------------------------------  \n\t%s \t| %s\n", 
