@@ -4,6 +4,7 @@
 # https://perldoc.perl.org/perldsc#Declaration-of-a-HASH-OF-ARRAYS
 
 our $num_cells = 22;
+our $tablename_prefix ="rrd_upload_" ;
 
 our %table_defs = ( 
 
@@ -79,11 +80,12 @@ foreach my $table (
 
   # print STDERR "building  table  $table \n"; 
   my $tbd = $table_defs{$table};
-  print STDERR " building  table  $table,  sequence = $tbd->{'seq' }   \n";
+  my $tablename = $tablename_prefix . $table ;
+  print STDERR " building  table  $tablename ,  sequence = $tbd->{'seq' }   \n";
   # print STDERR Dumper $tbd ;
 
   # do the real thing - fill with table name
-  printf $tabdef_head, $table, $table ;
+  printf $tabdef_head, $tablename, $tablename ;
 
   # cycle over rows
   foreach my $trow ( 
