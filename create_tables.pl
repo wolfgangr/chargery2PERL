@@ -64,12 +64,21 @@ EOF_TDTAIL
 #=============== pull the stuff apart
 
 # cycle over tables
-foreach $table ( sort { $table_defs{ $a }->{'seq' }<=> $table_defs{ $b }->{'seq' } }  keys %table_defs ) {
+foreach my $table ( 
+	sort { $table_defs{ $a }->{'seq' }<=> $table_defs{ $b }->{'seq' } }  
+	keys %table_defs ) {
+
   # print STDERR "building  table  $table \n"; 
   my $tbd = $table_defs{$table};
   print STDERR " building  table  $table,  sequence = $tbd->{'seq' }   \n";
   print STDERR Dumper $tbd ;
 
+  # cycle over rows
+  foreach my $trow ( keys %$tbd ) {
+    my $trd = %$tbd{$trow} ;
+    print STDERR Dumper $trd ;
+    print STDERR " building  row  $trow,  sequence = $$tbd{$trow}[0]   \n";
+  }
 
 
 }
