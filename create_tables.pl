@@ -74,7 +74,9 @@ foreach my $table (
   print STDERR Dumper $tbd ;
 
   # cycle over rows
-  foreach my $trow ( keys %$tbd ) {
+  foreach my $trow ( 
+	  sort {    $$tbd{ $a }[0]  <=>  $$tbd{ $b }[0]    }
+	  keys %$tbd ) {
     my $trd = %$tbd{$trow} ;
     print STDERR Dumper $trd ;
     print STDERR " building  row  $trow,  sequence = $$tbd{$trow}[0]   \n";
