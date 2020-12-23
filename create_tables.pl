@@ -8,17 +8,19 @@ our %table_defs = (
 	# U01 U02 ...  U22
   } ,
   pack56 => {
-	Vtot	=> [ 6,4 ] , 
-	Ah	=> [ 6,2 ] ,
-	Wh	=> [ 8,3 ] ,
+	seq => 2, 
+	Vtot	=> [ 1, 6,4 ] , 
+	Ah	=> [ 2, 6,2 ] ,
+	Wh	=> [ 3, 8,3 ] ,
   } ,
   pack57 => {
-	curr	=> [ 6,4 ] ,
-	mode	=> [ 6,4 ] ,
-	Vend_c	=> [ 6,4 ] ,
-	SOC	=> [ 6,4 ] ,
-	temp1	=> [ 6,4 ] ,
-	temp2	=> [ 6,4 ] ,
+	seq => 3, 
+	curr	=> [ 1, 6,4 ] ,
+	mode	=> [ 2, 6,4 ] ,
+	Vend_c	=> [ 3, 6,4 ] ,
+	SOC	=> [ 4, 6,4 ] ,
+	temp1	=> [ 5, 6,4 ] ,
+	temp2	=> [ 6, 6,4 ] ,
   } ,
 );
 
@@ -26,9 +28,9 @@ our %table_defs = (
 
 my %def_cells;
 for $cell (1 .. $num_cells) {
-   $def_cells{ sprintf "U%02d", $cell } = [ 6,4 ] ;
+   $def_cells{ sprintf "U%02d", $cell } = [ $cell  ,  6,4 ] ;
 }
-
+$def_cells{ 'seq' } = 1;
 $table_defs{'cells'} = \%def_cells;
 
 # ===== end of config
