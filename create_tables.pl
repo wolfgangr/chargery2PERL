@@ -76,6 +76,9 @@ foreach my $table (
   print STDERR " building  table  $table,  sequence = $tbd->{'seq' }   \n";
   # print STDERR Dumper $tbd ;
 
+  # do the real thing - fill with table name
+  printf $tabdef_head, $table ;
+
   # cycle over rows
   foreach my $trow ( 
 	  sort {    $$tbd{ $a }[0]  <=>  $$tbd{ $b }[0]    }
@@ -84,7 +87,13 @@ foreach my $table (
     my $trd = %$tbd{$trow} ;
     # print STDERR Dumper $trd ;
     print STDERR " +----  building  row  $trow,  sequence = $$trd[0] param: $$trd[1] , $$trd[2]   \n";
+
+
+    # do the real thing
+    printf $tabdef_row,  $trow, $$trd[1] , $$trd[2]   ;
   }
 
+  # finish the real thing
+  print $tabdef_tail;
 
 }
