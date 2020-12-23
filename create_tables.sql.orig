@@ -1,0 +1,12 @@
+DROP TABLE IF EXISTS `rrd_upload_pack56`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `rrd_upload_pack56` (
+  `time` datetime NOT NULL,
+  `Vtot` decimal(6,4) DEFAULT NULL,
+  `Ah` decimal(6,2) DEFAULT NULL,
+  `Wh` decimal(8,3) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
+  PRIMARY KEY (`time`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii COMMENT='import-Tabelle für RRD-Daten';
+/*!40101 SET character_set_client = @saved_cs_client */;

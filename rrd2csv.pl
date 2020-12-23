@@ -5,7 +5,8 @@
 our $usage = <<"EOF_USAGE";
 usage: $0 db.rrd CF
   [-s start][-e end][-r res][-a]  [-V valid-rows ]
-  [-f outfile][-x sep][-d delim][-t][-T dttag][-H][-M]   [-v #][-h]
+  [-f outfile][-x sep][-d delim][-t][-T dttag][-z tz] [-H][-M]   
+  [-v #][-h]
 EOF_USAGE
 
 
@@ -64,6 +65,7 @@ $usage
 
 	-H	translate unixtime to H_uman readable time
 	-M	translate unixtime to M_ySQL timestamps
+	-z foo	set timezone, default is 'local'
 
 	-v int	set verbosity level
 
@@ -74,10 +76,17 @@ EOF_USAGE_L
 
 # real stuff starting here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 
+# time zone - this is crude, would it be better as option?
+# $ENV{"TZ"} = 'local';
+# system "setenv TZ local";
+
+# our $timezone = 
+
 use Getopt::Std;
 use  RRDs;
 use DateTime;
 use Data::Dumper  ;
+
 
 
 our $debug =0; 	# default, overwritten by -v option
@@ -90,7 +99,7 @@ my $cf      = shift @ARGV;
 die "$usage" unless $rrdfile;
 die "$usage_long" if ( ! ($cf) ) or $rrdfile eq '-h' or $cf eq '-h' ;
 
-my $retval = getopts('s:e:tT:HMx:d:r:af:HMv:V:h')  ;
+my $retval = getopts('s:e:tT:HMx:d:r:af:HMv:V:hz:')  ;
 die "$usage" unless ($retval) ;
 
 die "$usage_long" if $opt_h  ;
@@ -99,8 +108,8 @@ my $start  = $opt_s  || 'e-1d';
 my $end    = $opt_e  || 'n';
 my $header = $opt_t;
 my $hl_timetag = $opt_T || 'time' ;
-my $sep    = $opt_x;
-my $delim  = $opt_d;
+my $sep    = $opt_x || ';' ; 
+my $delim  = $opt_d ; # || ' ';
 my $align  = $opt_a;
 my $res    = $opt_r;
 my $outfile = $opt_f ;
@@ -109,6 +118,7 @@ $debug = $opt_v unless $opt_v eq '';
 my $valid_rows = 1 ;
 unless  ($opt_V eq '') {  $valid_rows = $opt_V ;  }
 
+our $timezone = DateTime::TimeZone->new( name => ( $opt_z ? $opt_z : 'local' ) ) ;
 
 debug_printf (3, "parameter db=%s CF=%s start=%s end=%s resolution=%s align=%d output=%s header=%s sep=%s delim=%s \n",
 	$rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      );
@@ -124,7 +134,7 @@ debug_printf (3, "%s\n", join ( ' | ', @paramlist));
 my ($start,$step,$names,$data) = RRDs::fetch (@paramlist);
 
 # nice time formating - for debug and for exercise...
-my $dt = DateTime->from_epoch( epoch => $start );
+my $dt = DateTime->from_epoch( epoch => $start , time_zone => $timezone  );
 debug_printf ( 3, "retrieved, \n start %s step %d, columns %d, rows %d\n\tErr: >%s<\n", 
        	$dt->datetime('_'),
 	$step, $#$names, $#$data, RRDs::error);
@@ -166,11 +176,11 @@ for my $rowcnt (0 .. $#$data ) {
    my $timestring;
    if ( $opt_M ) {
       # mysql datetime format YYYY-MM-DD HH:MM:SS
-      my $dt =  DateTime->from_epoch( epoch => $rowtime );
+      my $dt =  DateTime->from_epoch( epoch => $rowtime ,  time_zone => $timezone );
       $timestring =  sprintf ( "%s %s", $dt->ymd('-') , $dt->hms(':') ) ;
    } elsif ( $opt_H ) {
       # human readable datetime e.g. 22.12.2020-05:00:00 , i.e. dd.mm.yyyy-hh:mm:ss
-      my $dt =  DateTime->from_epoch( epoch => $rowtime );
+      my $dt =  DateTime->from_epoch( epoch => $rowtime ,  time_zone => $timezone );
       $timestring =  sprintf ( "%s-%s", $dt->dmy('.') , $dt->hms );
    } else {
      $timestring = sprintf "%s" , $rowtime ;
