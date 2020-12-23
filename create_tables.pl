@@ -2,11 +2,40 @@
 # crude hack to create tables
 our $num_cells = 22;
 
-our %table_defs;
+our %table_defs = ( 
+
+  cells => {
+	# U01 U02 ...  U22
+  } ,
+  pack56 => {
+	Vtot	=> [ 6,4 ] , 
+	Ah	=> [ 6,2 ] ,
+	Wh	=> [ 8,3 ] ,
+  } ,
+  pack57 => {
+	curr	=> [ 6,4 ] ,
+	mode	=> [ 6,4 ] ,
+	Vend_c	=> [ 6,4 ] ,
+	SOC	=> [ 6,4 ] ,
+	temp1	=> [ 6,4 ] ,
+	temp2	=> [ 6,4 ] ,
+  } ,
+);
+
+# ==== automagic config of table cols per cell
+
+my %def_cells;
+for $cell (1 .. $num_cells) {
+   $def_cells{ sprintf "U%02d", $cell } = [ 6,4 ] ;
+}
+
+$table_defs{'cells'} = \%def_cells;
+
+# ===== end of config
 
 use Data::Dumper;
 
-print Dumper( \%table_defs ) ;
+print STDERR Dumper( \%table_defs ) ;
 
 
 my $tabdef_head = <<"EOF_TDHEAD";
