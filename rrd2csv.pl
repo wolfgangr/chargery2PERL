@@ -74,13 +74,24 @@ EOF_USAGE_L
 
 # real stuff starting here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 
+# time zone - this is crude, would it be better as option?
+# $ENV{"TZ"} = 'local';
+# system "setenv TZ local";
+
+# our $timezone = 
+
 use Getopt::Std;
 use  RRDs;
 use DateTime;
 use Data::Dumper  ;
 
 
+
 our $debug =0; 	# default, overwritten by -v option
+
+# https://metacpan.org/pod/DateTime#Determining-the-Local-Time-Zone-Can-Be-Slow
+#
+our $timezone = DateTime::TimeZone->new( name => 'local' );
 
 # we need at least a rrd file name and a CF
 
@@ -99,8 +110,8 @@ my $start  = $opt_s  || 'e-1d';
 my $end    = $opt_e  || 'n';
 my $header = $opt_t;
 my $hl_timetag = $opt_T || 'time' ;
-my $sep    = $opt_x;
-my $delim  = $opt_d;
+my $sep    = $opt_x || ';' ; 
+my $delim  = $opt_d ; # || ' ';
 my $align  = $opt_a;
 my $res    = $opt_r;
 my $outfile = $opt_f ;
@@ -124,7 +135,7 @@ debug_printf (3, "%s\n", join ( ' | ', @paramlist));
 my ($start,$step,$names,$data) = RRDs::fetch (@paramlist);
 
 # nice time formating - for debug and for exercise...
-my $dt = DateTime->from_epoch( epoch => $start );
+my $dt = DateTime->from_epoch( epoch => $start , time_zone => $timezone  );
 debug_printf ( 3, "retrieved, \n start %s step %d, columns %d, rows %d\n\tErr: >%s<\n", 
        	$dt->datetime('_'),
 	$step, $#$names, $#$data, RRDs::error);
@@ -166,11 +177,11 @@ for my $rowcnt (0 .. $#$data ) {
    my $timestring;
    if ( $opt_M ) {
       # mysql datetime format YYYY-MM-DD HH:MM:SS
-      my $dt =  DateTime->from_epoch( epoch => $rowtime );
+      my $dt =  DateTime->from_epoch( epoch => $rowtime ,  time_zone => $timezone );
       $timestring =  sprintf ( "%s %s", $dt->ymd('-') , $dt->hms(':') ) ;
    } elsif ( $opt_H ) {
       # human readable datetime e.g. 22.12.2020-05:00:00 , i.e. dd.mm.yyyy-hh:mm:ss
-      my $dt =  DateTime->from_epoch( epoch => $rowtime );
+      my $dt =  DateTime->from_epoch( epoch => $rowtime ,  time_zone => $timezone );
       $timestring =  sprintf ( "%s-%s", $dt->dmy('.') , $dt->hms );
    } else {
      $timestring = sprintf "%s" , $rowtime ;
