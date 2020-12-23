@@ -64,7 +64,7 @@ EOF_TDTAIL
 #=============== pull the stuff apart
 
 # cycle over tables
-foreach $table ( keys %table_defs ) {
+foreach $table ( sort { $table_defs{ $a }->{'seq' }<=> $table_defs{ $b }->{'seq' } }  keys %table_defs ) {
   print STDERR "building  table  $table \n"; 
   my $tbd = $table_defs{$table};
   print STDERR "sequence = $tbd->{'seq' }   \n";
