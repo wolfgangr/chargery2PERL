@@ -1,7 +1,12 @@
 #!/usr/bin/perl
 # crude hack to create tables
+# print debug to SDTERR
+# working output to file
+
 our $num_cells = 22;
 
+# we only have decimal numeric fields
+# hash of tables => hash of rows => array [ width , decimals ]
 our %table_defs = ( 
 
   cells => {
@@ -55,4 +60,14 @@ my $tabdef_tail = <<"EOF_TDTAIL";
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii ;
 /*!40101 SET character_set_client = \@saved_cs_client */;
 EOF_TDTAIL
+
+#========== assemble defs ==================
+
+# loop over tables
+
+
+# loop over fields
+
+# add field definition
+
 
