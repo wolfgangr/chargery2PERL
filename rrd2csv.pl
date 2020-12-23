@@ -5,7 +5,8 @@
 our $usage = <<"EOF_USAGE";
 usage: $0 db.rrd CF
   [-s start][-e end][-r res][-a]  [-V valid-rows ]
-  [-f outfile][-x sep][-d delim][-t][-T dttag][-H][-M]   [-v #][-h]
+  [-f outfile][-x sep][-d delim][-t][-T dttag][-z tz] [-H][-M]   
+  [-v #][-h]
 EOF_USAGE
 
 
@@ -64,6 +65,7 @@ $usage
 
 	-H	translate unixtime to H_uman readable time
 	-M	translate unixtime to M_ySQL timestamps
+	-z foo	set timezone, default is 'local'
 
 	-v int	set verbosity level
 
@@ -89,10 +91,6 @@ use Data::Dumper  ;
 
 our $debug =0; 	# default, overwritten by -v option
 
-# https://metacpan.org/pod/DateTime#Determining-the-Local-Time-Zone-Can-Be-Slow
-#
-our $timezone = DateTime::TimeZone->new( name => 'local' );
-
 # we need at least a rrd file name and a CF
 
 my $rrdfile = shift @ARGV;
@@ -101,7 +99,7 @@ my $cf      = shift @ARGV;
 die "$usage" unless $rrdfile;
 die "$usage_long" if ( ! ($cf) ) or $rrdfile eq '-h' or $cf eq '-h' ;
 
-my $retval = getopts('s:e:tT:HMx:d:r:af:HMv:V:h')  ;
+my $retval = getopts('s:e:tT:HMx:d:r:af:HMv:V:hz:')  ;
 die "$usage" unless ($retval) ;
 
 die "$usage_long" if $opt_h  ;
@@ -120,6 +118,7 @@ $debug = $opt_v unless $opt_v eq '';
 my $valid_rows = 1 ;
 unless  ($opt_V eq '') {  $valid_rows = $opt_V ;  }
 
+our $timezone = DateTime::TimeZone->new( name => ( $opt_z ? $opt_z : 'local' ) ) ;
 
 debug_printf (3, "parameter db=%s CF=%s start=%s end=%s resolution=%s align=%d output=%s header=%s sep=%s delim=%s \n",
 	$rrdfile, $cf, $start, $end, $res, $align, $outfile, $header , $sep, $delim      );
