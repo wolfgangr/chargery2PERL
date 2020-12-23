@@ -1,5 +1,6 @@
 db_cred_reader.pli
 db_cred_writer.pli
+login.sh
 test*.raw*
 test.log*
 *.swp
