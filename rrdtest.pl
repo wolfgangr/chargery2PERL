@@ -12,15 +12,15 @@
 # i e all rrd last updates are younger than gracetime
 
 our $rrdtool = `which rrdtool   `;
+our $dtformat = '+\'%F %T\'' ; # datetime format string for console `date`
+
 my $firstparam = $ARGV[0] ;
 
 if ( $firstparam   =~ /^\d+$/ ) {
-	printf "%s looks like a number\n", $firstparam ;
+	### printf "%s looks like a number\n", $firstparam ;
 	$gracetime = shift @ARGV  ;
 } else {
-	printf "%s is not a number \n", $firstparam ;
-	# unshift @ARGV , $firstparam;
-	# $firstparam = undef;
+	###  printf "%s is not a number \n", $firstparam ;
 	$gracetime = 60 ;
 }
 
@@ -29,10 +29,10 @@ printf "gracetime: %s \n", $gracetime ;
 my $errcnt = 0;
 
 foreach $arg (@ARGV ) { 
-	printf "processing %s ", $arg ;
+	### printf "processing %s ", $arg ;
 	my $output =`rrdtool lastupdate $arg ` ;
-	print "~~~~~~~~~~~~~~~~~~~~\n";
-	print $output;
+	### print "~~~~~~~~~~~~~~~~~~~~\n";
+	### print $output;
 	# die "looks like $arg is not a nice rrd " unless $output;
 	unless ($output) {
 		# no need to kilroy at STDERR - rrdtool complains there
@@ -59,13 +59,23 @@ foreach $arg (@ARGV ) {
 		next;
 	}
 	# if succesful 'til here, we have the 2nd line splitted in the regexp backrefs	
-	$datetimestr = `date -d \@$1`;
+	$datetimestr = mydatetime($1) ;
 		chomp $datetimestr ;
 	$restofline = $2;
 	$okstring = 'no clue' ;
 
 	# render the user friendly part
-	printf "== %s == | %s\n", $arg, $lines[0]; # db name in top left, col headers follow
-	printf "?%s? >%s< >%s< \n", $okstring, $datetimestr, $restofline ;
+	printf "--- [ %s ] ---------------------------------  \n\t%s \t| %s\n", 
+		$arg, $okstring,  $lines[0]; # db name in top left, col headers follow
+	printf "%s  \t| \t%s \n",  $datetimestr, $restofline ;
 }
-print " ~ ~ ~ DONE ~ ~ ~ \n\terrors found: $errcnt\n";
+print " =============== DONE - errors: $errcnt ==============\n";
+
+exit ;
+
+# ======================================
+sub mydatetime {
+  my $arg = shift;
+  my $rv =`date -d \@$arg $dtformat` ;
+  return $rv ;
+}
