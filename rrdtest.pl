@@ -85,7 +85,8 @@ foreach $arg (@ARGV ) {
 }
 print " =============== DONE - errors: $errcnt ==============\n";
 
-exit ;
+# inform the caller
+exit ( $errcnt ? 1 : 0 )  ;
 
 # ======================================
 sub mydatetime {
