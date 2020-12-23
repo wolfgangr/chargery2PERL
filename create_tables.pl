@@ -65,10 +65,11 @@ EOF_TDTAIL
 
 # cycle over tables
 foreach $table ( sort { $table_defs{ $a }->{'seq' }<=> $table_defs{ $b }->{'seq' } }  keys %table_defs ) {
-  print STDERR "building  table  $table \n"; 
+  # print STDERR "building  table  $table \n"; 
   my $tbd = $table_defs{$table};
-  print STDERR "sequence = $tbd->{'seq' }   \n";
-  # print STDERR Dumper $tbd ;
+  print STDERR " building  table  $table,  sequence = $tbd->{'seq' }   \n";
+  print STDERR Dumper $tbd ;
+
 
 
 }
