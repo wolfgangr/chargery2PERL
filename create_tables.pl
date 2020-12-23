@@ -11,19 +11,20 @@ our %table_defs = (
 	# U01 U02 ...  U22
   } ,
   pack56 => {
-	seq => 2, 
+	seq => 2,
+        #	[ seq, digits, decimals ]	
 	Vtot	=> [ 1, 6,4 ] , 
 	Ah	=> [ 2, 6,2 ] ,
 	Wh	=> [ 3, 8,3 ] ,
   } ,
   pack57 => {
 	seq => 3, 
-	curr	=> [ 1, 6,4 ] ,
-	mode	=> [ 2, 6,4 ] ,
-	Vend_c	=> [ 3, 6,4 ] ,
-	SOC	=> [ 4, 6,4 ] ,
-	temp1	=> [ 5, 6,4 ] ,
-	temp2	=> [ 6, 6,4 ] ,
+	curr	=> [ 1, 6,3 ] ,
+	mode	=> [ 2, 1,0 ] ,
+	Vend_c	=> [ 3, 4,3 ] ,
+	SOC	=> [ 4, 3,0 ] ,
+	temp1	=> [ 5, 4,2 ] ,
+	temp2	=> [ 6, 4,2 ] ,
   } ,
 );
 
@@ -31,7 +32,7 @@ our %table_defs = (
 
 my %def_cells;
 for $cell (1 .. $num_cells) {
-   $def_cells{ sprintf "U%02d", $cell } = [ $cell  ,  6,4 ] ;
+   $def_cells{ sprintf "U%02d", $cell } = [ $cell  ,  4,3 ] ;
 }
 $def_cells{ 'seq' } = 1;
 $table_defs{'cells'} = \%def_cells;
@@ -63,6 +64,8 @@ EOF_TDTAIL
 
 #=============== pull the stuff apart
 
+print STDERR "========== start parsing data tree \n ==========";
+
 # cycle over tables
 foreach my $table ( 
 	sort { $table_defs{ $a }->{'seq' }<=> $table_defs{ $b }->{'seq' } }  
@@ -71,15 +74,16 @@ foreach my $table (
   # print STDERR "building  table  $table \n"; 
   my $tbd = $table_defs{$table};
   print STDERR " building  table  $table,  sequence = $tbd->{'seq' }   \n";
-  print STDERR Dumper $tbd ;
+  # print STDERR Dumper $tbd ;
 
   # cycle over rows
   foreach my $trow ( 
 	  sort {    $$tbd{ $a }[0]  <=>  $$tbd{ $b }[0]    }
 	  keys %$tbd ) {
+    next if $trow eq 'seq' ;
     my $trd = %$tbd{$trow} ;
-    print STDERR Dumper $trd ;
-    print STDERR " building  row  $trow,  sequence = $$tbd{$trow}[0]   \n";
+    # print STDERR Dumper $trd ;
+    print STDERR " +----  building  row  $trow,  sequence = $$trd[0] param: $$trd[1] , $$trd[2]   \n";
   }
 
 
