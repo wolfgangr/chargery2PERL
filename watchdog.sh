@@ -7,8 +7,8 @@ LOGFILE='/var/log/wrosner/watchdog_rrd.log'
 UPDLOG='/var/log/wrosner/chargery_update.log'
 
 # uncomment this 2 line for debug
-echo -n "chargery rrd watchdog entered " >> $LOGFILE
-date >> $LOGFILE
+# echo -n "chargery rrd watchdog entered " >> $LOGFILE
+# date >> $LOGFILE
 
 
 # exit - nothing to do if rrdtest reports success

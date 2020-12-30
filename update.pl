@@ -158,7 +158,7 @@ while ($nbytes = read DATAIN, $data, 1) {
 
 
     } elsif ( $recentcmd == 0x58 ) {
-      debug_printf (2, "command processor for %02x not yet implemented",  $recentcmd ) ;
+      debug_printf (3, "command processor for %02x not yet implemented",  $recentcmd ) ;
       my $res = do_58 ( @datarray );
       debug_print ( 3,  Dumper ($res ));
 
