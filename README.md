@@ -20,11 +20,11 @@ never use for any serious work!
 Expect VERY nasty things to happen ;-)
 
 ### whats in
-    \*.rrd some  
-rrd round robin databases  
+    \*.rrd 
+some rrd round robin databases  
   
     create\*rrd.sh
-    metacreate\*.pl  
+    metacreate\*.pl 
 skripts to reproducibly produce them, only called at setup  
 in a 2 step approach  
 \*.pl -> \*.sh -> \*.rrd  
