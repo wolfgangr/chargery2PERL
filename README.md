@@ -41,10 +41,10 @@ set terminal parameters for the USB-serial adapter where data comes in
   
     update.pl  
 do the most part of real work:
-* read from data line  
-* parse chargery data  
-* write to rrd  
-...  
+* read from data line
+* parse chargery data
+* write to rrd
+...
   
  
     rrd2csv.pl
