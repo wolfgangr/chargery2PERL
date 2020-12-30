@@ -48,8 +48,8 @@ use Data::HexDump;
 # use Data::Dump::OneLine;
 use Data::Dumper;
 
-
-system("setstty-RS485.sh");
+# do this outside in the watchdog 
+# system("setstty-RS485.sh");
 
 open DATAIN, $filename
 	or die "Error opening binary input file $filename: !$\n";
