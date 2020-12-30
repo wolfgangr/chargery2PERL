@@ -26,13 +26,13 @@ some rrd round robin databases
     create\*rrd.sh
     metacreate\*.pl 
 skripts to reproducibly produce them, only called at setup  
-in a 2-step approach: `\*.pl -> \*.sh -> \*.rrd  `
+in a 2-step approach: `\*.pl -> \*.sh -> \*.rrd`  
 so we can find clues regarding rrd structure in the  `\*.sh`  
   
  
 
     ../dev\_chargery -> /dev/serial/by-path/foo\_bar\_whatever    
-link to persitant location of USB-Dongle  
+link to persistent location of USB-Dongle  
 hope `/dev/serial/by-path/` allows us to avoid udev acrobatics  
 
  
@@ -44,7 +44,8 @@ do the most part of real work:
 * read from data line  
 * parse chargery data  
 * write to rrd  
-
+  
+ 
     rrd2csv.pl
     rrdtest.pl
     rrdtest.sh
