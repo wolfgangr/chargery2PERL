@@ -20,18 +20,18 @@ never use for any serious work!
 Expect VERY nasty things to happen ;-)
 
 ### whats in
-    \*.rrd 
+    *.rrd 
 some rrd round robin databases  
   
-    create\*rrd.sh
-    metacreate\*.pl 
+    create*rrd.sh
+    metacreate*.pl 
 skripts to reproducibly produce them, only called at setup  
-in a 2-step approach: `\*.pl -> \*.sh -> \*.rrd`  
-so we can find clues regarding rrd structure in the  `\*.sh`  
+in a 2-step approach: `*.pl -> *.sh -> *.rrd`  
+so we can find clues regarding rrd structure in the  `*.sh`  
   
  
 
-    ../dev\_chargery -> /dev/serial/by-path/foo\_bar\_whatever    
+    ../dev_chargery -> /dev/serial/by-path/foo_bar_whatever    
 link to persistent location of USB-Dongle  
 hope `/dev/serial/by-path/` allows us to avoid udev acrobatics  
 
@@ -58,12 +58,12 @@ some helper stuff for hands on retrieval, debugging and the watchdog
 cron script to check if rrd update is working  
 good idea to be called every 5 min or so  
   
-    create\_tables.\*  
+    create_tables.*  
 some database structure generation hacks  
 
-    login\_sh\_notsecret  
-    secret\_pwd.template  
-    db\_cred\_template.pli  
+    login_sh_notsecret  
+    secret_pwd.template  
+    db_cred_template.pli  
 anonymized versions of mysql credential vaults and command line login helpers    
   
     sync-chargery-rrd-to-SQL.sh  
