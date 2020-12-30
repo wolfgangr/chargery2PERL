@@ -20,11 +20,11 @@ never use for any serious work!
 Expect VERY nasty things to happen ;-)
 
 ### whats in
-\*.rrd some  
+    \*.rrd some  
 rrd round robin databases  
   
-create\*rrd.sh
-metacreate\*.pl  
+    create\*rrd.sh
+    metacreate\*.pl  
 skripts to reproducibly produce them, only called at setup  
 in a 2 step approach  
 \*.pl -> \*.sh -> \*.rrd  
@@ -67,4 +67,6 @@ sync-chargery-rrd-to-SQL.sh
 cron'able database upload skript
 syncs rrd data to a mysql  
   
-
+  
+  
+last edit: 2020-12-31 v0.26
