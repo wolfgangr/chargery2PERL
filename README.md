@@ -30,7 +30,13 @@ in a 2 step approach
 \*.pl -> \*.sh -> \*.rrd  
 so we can find clues regarding rrd structure in the  \+.sh  
   
-  
+ 
+
+../dev\_chargery -> /dev/serial/by-path/foo\_bar\_whatever    
+link to persitant location of USB-Dongle  
+hope /dev/serial/by-path/ allow to avoid udev acrobatics  
+
+ 
 setstty-RS485.sh  
 set terminal parameters for the USB-serial adapter where data comes in  
   
