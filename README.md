@@ -44,6 +44,7 @@ do the most part of real work:
 * read from data line  
 * parse chargery data  
 * write to rrd  
+...  
   
  
     rrd2csv.pl
