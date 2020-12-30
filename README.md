@@ -32,38 +32,38 @@ so we can find clues regarding rrd structure in the  \+.sh
   
  
 
-../dev\_chargery -> /dev/serial/by-path/foo\_bar\_whatever    
+    ../dev\_chargery -> /dev/serial/by-path/foo\_bar\_whatever    
 link to persitant location of USB-Dongle  
 hope /dev/serial/by-path/ allow to avoid udev acrobatics  
 
  
-setstty-RS485.sh  
+    setstty-RS485.sh  
 set terminal parameters for the USB-serial adapter where data comes in  
   
-update.pl  
+    update.pl  
 do the most part of real work:
 read from data line  
 parse chargery data  
 write to rrd  
 
-rrd2csv.pl
-rrdtest.pl
-rrdtest.sh
+    rrd2csv.pl
+    rrdtest.pl
+    rrdtest.sh
 some helper stuff for hands on retrieval, debugging and the watchdog
 
-watchdog.sh  
+    watchdog.sh  
 cron script to check if rrd update is working  
 good idea to be called every 5 min or so  
   
-create\_tables.\*  
+    create\_tables.\*  
 some database structure generation hacks  
 
-login\_sh\_notsecret  
-secret\_pwd.template  
-db\_cred\_template.pli  
+    login\_sh\_notsecret  
+    secret\_pwd.template  
+    db\_cred\_template.pli  
 anonymized versions of mysql credential vaults and command line login helpers    
   
-sync-chargery-rrd-to-SQL.sh  
+    sync-chargery-rrd-to-SQL.sh  
 cron'able database upload skript
 syncs rrd data to a mysql  
   
