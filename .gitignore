@@ -5,7 +5,7 @@ test*.raw*
 test.log*
 *.swp
 *.rrd
-create_*_rrd.sh
+# create_*_rrd.sh
 *.csv
 *.sql
 secret.pwd
