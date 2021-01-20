@@ -141,7 +141,16 @@ I did not want to screw my system to produce test cases.
 But may be, when the cauldron or the LAN returns back to service after some extended downtime, it may take some time or even manual action to bring loggin up again.
 Just to keep in mind....
 
+
+## reset USB serial device
+
+Sometimes the reason for log failure is the USB dongle.  
+We cannot physically unplug it, but we hope that we can do such a thing in software.  
   
+see this [blog entry](https://askubuntu.com/questions/645/how-do-you-reset-a-usb-device-from-the-command-line ) and find the usbreset.c  
+Compile and put to /usr/local/bin (or wherever you prefer).  
+Add sudo privileges fot this command w/o password.  
+Test.  Enjoy.  
 
 
 
