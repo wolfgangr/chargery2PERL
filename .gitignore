@@ -10,3 +10,4 @@ test.log*
 *.sql
 secret.pwd
 tmp/*
+./render/tmp/*

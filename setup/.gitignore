@@ -1,0 +1,4 @@
+*.service
+install.sh
+cleanup.sh
+*.swp

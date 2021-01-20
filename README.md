@@ -96,7 +96,7 @@ v0.26           added cron'able watchdog
 ```
 
 # ToDo per 2021-01-20:
-* pull render into project tree
+* OK - pull render into project tree
 * include status page and status API for BMS feed to infini
 * fix current shunt issue
 * switch from cron watchdog to systemd
