@@ -17,9 +17,9 @@ use warnings;
 use strict;
 use RRDs ;
 
-my $rrddir = '../rrd';  # relative to ./setup, no trailing /
-my @watched = qw ( status.rrd  statusX.rrd  temps.rrd  tempsX.rrd );
-my $gracetime = 120 ; 
+my $rrddir = '..';  # relative to ./setup, no trailing /
+my @watched = qw (  cells.rrd  pack56.rrd  pack57.rrd );
+my $gracetime = 20 ; 
 
 
 my $looptime = 20 ; # sleep between tests - recommended half of WatchdogSec=240 in service file

@@ -2,6 +2,8 @@
 
 # systemd starter script
 
+UPDLOG='/var/log/wrosner/chargery_update.log'
+
 SCRIPTDIR=`dirname "$0"`
 # echo $SCRIPTDIR
 cd $SCRIPTDIR
@@ -19,7 +21,13 @@ cd ..
 # pwd
 # launch the real thing
 # SCRIPTDIR/../log2rrd.pl &
-./log2rrd.pl > /dev/null 
+# ./log2rrd.pl > /dev/null 
+
+./setstty-RS485.sh  #   >> $LOGFILE 2>&1
+
+
+./update  >> $UPDLOG 2>&1
+
 
 # report success to sysstemd just in case it's configured to ask for
 # exit 0
