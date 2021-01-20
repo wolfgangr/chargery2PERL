@@ -12,3 +12,5 @@ stty $DEVICE -a
 # sleep 3
 echo "----- simple output -----"
 stty $DEVICE
+
+exit 0

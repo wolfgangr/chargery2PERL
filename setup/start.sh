@@ -9,7 +9,7 @@ SCRIPTDIR=`dirname "$0"`
 cd $SCRIPTDIR
 
 # spawn our associated babysitter
-./watchdog.pl &
+./watchdog_chargery.pl &
 
 # not sure what environment we get from systemd
 # echo $PATH
@@ -23,10 +23,10 @@ cd ..
 # SCRIPTDIR/../log2rrd.pl &
 # ./log2rrd.pl > /dev/null 
 
-./setstty-RS485.sh  #   >> $LOGFILE 2>&1
+./setstty-RS485.sh  >> $UPDLOG  
 
 
-./update  >> $UPDLOG 2>&1
+./update.pl    >> $UPDLOG  
 
 
 # report success to sysstemd just in case it's configured to ask for
