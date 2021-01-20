@@ -40,6 +40,7 @@ $usb_devname =~ /^(E: DEVNAME=)(.+)$/ or die "cannot parse $usb_devname";
 my $resettable = $2;
 print "\$resettable: $resettable\n";
 
-system (" $usbreset  $resettable ");
+# config this command for using sudo wo/ pwd
+system (" sudo $usbreset  $resettable ");
 
 
