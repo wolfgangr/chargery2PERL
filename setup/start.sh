@@ -3,6 +3,7 @@
 # systemd starter script
 
 UPDLOG='/var/log/wrosner/chargery_update.log'
+DEVICE='../../dev_chargery'
 
 SCRIPTDIR=`dirname "$0"`
 # echo $SCRIPTDIR
@@ -11,17 +12,11 @@ cd $SCRIPTDIR
 # spawn our associated babysitter
 ./watchdog_chargery.pl &
 
-# not sure what environment we get from systemd
-# echo $PATH
-# pwd
+# like unplugging / replugging
+./reset_ttyUSB.pl $DEVICE
+sleep 2
+
 cd ..
-# source /etc/profile
-# source ~/.profile
-# echo $PATH
-# pwd
-# launch the real thing
-# SCRIPTDIR/../log2rrd.pl &
-# ./log2rrd.pl > /dev/null 
 
 ./setstty-RS485.sh  >> $UPDLOG  
 
