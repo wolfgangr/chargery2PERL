@@ -73,3 +73,32 @@ syncs rrd data to a mysql
   
 ---------  
 last edit: 2020-12-31 v0.26
+
+version history:
+
+```
+v0.01           parses first 3 bytes
+v0.02           correct splitting of data array
+v0.03           checksum test
+v0.04           process 56 and 57 - tested
+v0.10           looks like test is r^Cghly completed
+v0.11           live read from real tty line
+v0.12           rrd update command 57 successfully tested
+v0.13           first cont'd test run cmd 56 & 57
+v0.14           debug system cleanup OK
+v0.20           rrd2csv reasonably working
+v0.21           cleanup file system etc
+v0.22           add rrdtest basic watchdog utils
+v0.23           add database generation scripts
+v0.24           add database sync scripts
+v0.25           add time zone handler to csv-exporter and resolved git detached head
+v0.26           added cron'able watchdog
+```
+
+# ToDo per 2021-01-20:
+* pull render into project tree
+* include status page and status API for BMS feed to infini
+* fix current shunt issue
+* switch from cron watchdog to systemd
+* production test
+ 
