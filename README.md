@@ -70,7 +70,15 @@ anonymized versions of mysql credential vaults and command line login helpers
 cron'able database upload skript
 syncs rrd data to a mysql  
   
-  
+ 
+## chargery quirks
+
+It looks like data is only sent when the chargery LCD control unit is on.  
+There is a config settin for LCD illumination off, but it seems to be ignored.  
+I just set it manually off, since even large batteries once upon a time get exhausted by tiny current.  
+Well, looks like that's the price for data, at least at the moment?  
+
+ 
 ---------  
 last edit: 2020-12-31 v0.26
 

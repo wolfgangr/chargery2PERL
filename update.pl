@@ -122,7 +122,8 @@ while ($nbytes = read DATAIN, $data, 1) {
       my $update_data =  join (':', $now, (@{$res}{@hash_slice_57} ));
       debug_printf ( 3, "RRD data %s\n", $update_data );
 
-      RRDs::update ($rrd_pack57, '--template', $rrd_tpl_pack57, $update_data ) unless $dryrun ;
+      # --skip-past-updates gracefully allows multi updates per second 
+      RRDs::update ($rrd_pack57, '--skip-past-updates' , '--template', $rrd_tpl_pack57, $update_data ) unless $dryrun ;
       # debug_print ( 2, "ERROR while updating mydemo.rrd: $ERR\n" ) if $ERR = RRDs::error ;
       # debug_rrd ($level1, $level2, $ERR )
       debug_rrd (2,3, RRDs::error );
