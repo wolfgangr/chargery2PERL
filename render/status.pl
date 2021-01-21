@@ -87,6 +87,24 @@ sub rrd_lastupdate {
 
 	my %rvh = ( rrdfile => $rrdfile , gracetime => $gracetime );
 
+	my $now = $rvh{testtime} =  time();
+	my $lastupdate = $rvh{lastupdate} = RRDs::last ( $rrdfile );
+	if (defined ($rvh{'rrd_err' } =  RRDs::error) ) {
+		$rvh{'rrd_errstr' } = $rvh{'rrd_err' };
+		return %rvh ;
+	}  
+			
+	my $lastupdate_obj = Time::Piece->new($lastupdate);
+	my $now_obj = Time::Piece->new($now);
+	$rvh{testime_hr} = $now_obj->date . ' - ' .  $now_obj->time ;
+	$rvh{lastupdate_hr} = $lastupdate_obj->date . ' - ' .  $lastupdate_obj->time ;	
+
+	$rvh{OK} = ( ($rvh{passed} = $now - $lastupdate ) <= $gracetime );  
+
+	#my $lastupdate_obj = Time::Piece->new($lastupdate);
+	#my $lastupdate_hr = $lastupdate_obj->datetime ;
+	
+	$rvh{'rrd_errstr' } ='-' ;
 	return %rvh ;
 		
 }
