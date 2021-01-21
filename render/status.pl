@@ -43,6 +43,18 @@ print header();
 print start_html(-title => $title);
 print h1($title);
 
+print "<hr>\n<table><tr>\n";
+
+
+print map { sprintf '<th>%s</th>' , $_ } @{$cells_state{ds_tags}} ;
+print "</tr>\n<tr>";
+print map { sprintf '<td align="ceter">%s V</td>' , $_ } @{$cells_state{ds_last}} ;
+
+
+
+
+print "\n</tr></table>\n<hr>";
+
 # ~~~~~~~~~ debug output ~~~~~~~~~~~~~~~~~~~~~~~
 print "<pre>\n";
 
