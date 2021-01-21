@@ -101,6 +101,22 @@ sub rrd_lastupdate {
 
 	$rvh{OK} = ( ($rvh{passed} = $now - $lastupdate ) <= $gracetime );  
 
+	# $rvh{rrd_fetch} = [  my ($start,$step,$names,$data) = 
+	# 	RRDs::fetch ($rrdfile , 'AVERAGE', '-s', $lastupdate-10  ,  '-a' ) 
+	#     ];
+
+	my $rrd_info  = RRDs::info ($rrdfile);
+	$rvh{rrd_info} = $rrd_info ;
+        if (defined ($rvh{'rrd_err' } =  RRDs::error) ) {
+                $rvh{'rrd_errstr' } = $rvh{'rrd_err' };
+                return %rvh ;
+        } 
+	$rvh{rrd_step} =  $$rrd_info{step};
+	$rvh{info_last_update} =  $$rrd_info{last_update};
+
+	# parse for stuff like
+	# 	 ds[U18].last_ds = "2.049"
+
 	#my $lastupdate_obj = Time::Piece->new($lastupdate);
 	#my $lastupdate_hr = $lastupdate_obj->datetime ;
 	
