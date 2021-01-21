@@ -50,7 +50,13 @@ for my $tag ( qw ( curr mode Vend_c SOC temp1 temp2  ))
         { $tv{ $tag } = $p57_state{ ds_last }->[ $p57_state{ds_map}->{ $tag } ] ; }
 
 
+# 00(Discharge) 01 (Charge) 02 (Storage)
+my @modes = qw ( Entladen Laden Speichern );
+my $mode = $modes[ $tv{ mode } ] ;
 
+# soc symbol is rendered as table in whatever whith 100 vertical bars as <td width="3" height="40"  
+# and a gradient from red to green
+# TODO  make dependent on real soc once we have such
 my $soc_symbol = '<table cellpadding ="0" cellspacing="0" ><tr>' ;
 
 for my $i (0 .. 99) {
@@ -90,7 +96,7 @@ my $tv_format = '<tr bgcolor="#ffffff" >'
 	. '<td>&nbsp;%s&nbsp;</td></tr>'
 	. "\n";
 
-printf $tv_format, 'Betriebszustand' , '###' , '' ;
+printf $tv_format, 'Betriebszustand' , $mode , '' ;
 printf $tv_format, 'Gesamtspannung' , $tv{Vtot} , 'V' ;
 printf $tv_format, 'Strom', , $tv{curr} , 'A' ;
 printf $tv_format, 'Ladezustand', , $tv{SOC} , '%' ;
