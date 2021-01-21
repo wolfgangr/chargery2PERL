@@ -88,12 +88,21 @@ sub rrd_lastupdate {
 	my %rvh = ( rrdfile => $rrdfile , gracetime => $gracetime );
 
 	my $now = $rvh{testtime} =  time();
-	my $lastupdate = $rvh{lastupdate} = RRDs::last ( $rrdfile );
-	if (defined ($rvh{'rrd_err' } =  RRDs::error) ) {
-		$rvh{'rrd_errstr' } = $rvh{'rrd_err' };
-		return %rvh ;
-	}  
-			
+	# my $lastupdate = $rvh{lastupdate} = RRDs::last ( $rrdfile );
+	# if (defined ($rvh{'rrd_err' } =  RRDs::error) ) {
+	# 	$rvh{'rrd_errstr' } = $rvh{'rrd_err' };
+	# 	return %rvh ;
+	# }  
+
+	my $rrd_info  = RRDs::info ($rrdfile);
+        # $rvh{rrd_info} = $rrd_info ; # for debug we want to know anything
+        if (defined ($rvh{'rrd_err' } =  RRDs::error) ) {
+                $rvh{'rrd_errstr' } = $rvh{'rrd_err' };
+                return %rvh ;
+        }
+        $rvh{rrd_step} =  $$rrd_info{step};
+
+        my $lastupdate =  $rvh{lastupdate} =  $$rrd_info{last_update}; # ah we can drop the first call
 	my $lastupdate_obj = Time::Piece->new($lastupdate);
 	my $now_obj = Time::Piece->new($now);
 	$rvh{testime_hr} = $now_obj->date . ' - ' .  $now_obj->time ;
@@ -101,18 +110,6 @@ sub rrd_lastupdate {
 
 	$rvh{OK} = ( ($rvh{passed} = $now - $lastupdate ) <= $gracetime );  
 
-	# $rvh{rrd_fetch} = [  my ($start,$step,$names,$data) = 
-	# 	RRDs::fetch ($rrdfile , 'AVERAGE', '-s', $lastupdate-10  ,  '-a' ) 
-	#     ];
-
-	my $rrd_info  = RRDs::info ($rrdfile);
-	# $rvh{rrd_info} = $rrd_info ; # for debug we want to know anything
-        if (defined ($rvh{'rrd_err' } =  RRDs::error) ) {
-                $rvh{'rrd_errstr' } = $rvh{'rrd_err' };
-                return %rvh ;
-        } 
-	$rvh{rrd_step} =  $$rrd_info{step};
-	$rvh{info_last_update} =  $$rrd_info{last_update}; # ah we can drop the first call
 
 	# what can we know about ds?
 	#  ..$ rrdinfo cells.rrd | grep U01
