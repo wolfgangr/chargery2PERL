@@ -1,6 +1,32 @@
-# returns a status hash
+
+# resembles the `rrdtool lastupdate` cmd line functionality with some extensions
+# intendend to extract status reports for 3rd pty pieces from rrd
+#
+# returns a status hash as this: 
+#
+# %rrdstatus = (
+#	'rrdfile'    => '../cells.rrd',
+#	'gracetime'  => 60,
+#
+#	'rrd_err'    => undef
+#	'rrd_errstr' => '-'
+#
+# 	'rrd_step'   => 5,
+#	'testtime'   => 1611242664,	'testime_hr'    => '2021-01-21 - 16:24:24',
+#	'lastupdate' => 1611242661,	'lastupdate_hr' => '2021-01-21 - 16:24:21',
+#	'passed'     =>          3,	           'OK' => 1,
+#
+#	'ds_map'    => { 'U18' => 17,  'U08' => 7, 'U07' => 6, .... 	},
+#       'ds_tags'   => [ 'U01',  'U02',  'U03', ....			], 
+#	'ds_last'   => [ '2.209', '2.25', '2.221',			],
+#	'ds_s_unkn' => [ 0,0, .... 					],		
+#   	 	)
 #
 # %rrdstatus = rrd_lastupdate ( $rrdfile, [ $gracetime ]) 
+
+use Time::Piece;
+
+
 sub rrd_lastupdate {
         my $rrdfile = shift ;
         my $gracetime = shift || 60 ;
