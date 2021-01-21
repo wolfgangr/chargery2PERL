@@ -71,12 +71,12 @@ my $U_c_diff = $U_c_max - $U_c_min ;
 
 # triangles to be rendered with after cell voltage
 my @cv_triangles = (('') x scalar @cell_volts) ;
-@cv_triangles[$index_by_value[0]] = '&#x25B2' ; # large triangle up
-@cv_triangles[$index_by_value[1]] = '&#x25B4' ; # small triangle up
-@cv_triangles[$index_by_value[2]] = '&#x25B4' ; # small triangle up
-@cv_triangles[$index_by_value[-3]] = '&#x25BE' ; # small triangle down
-@cv_triangles[$index_by_value[-2]] = '&#x25BE' ; # small triangle down
-@cv_triangles[$index_by_value[-1]] = '&#x25BC' ; # large triangle down
+@cv_triangles[$index_by_value[0]] = '&#x25B2;' ; # large triangle up
+@cv_triangles[$index_by_value[1]] = '&#x25B4;' ; # small triangle up
+@cv_triangles[$index_by_value[2]] = '&#x25B4;' ; # small triangle up
+@cv_triangles[$index_by_value[-3]] = '&#x25BE;' ; # small triangle down
+@cv_triangles[$index_by_value[-2]] = '&#x25BE;' ; # small triangle down
+@cv_triangles[$index_by_value[-1]] = '&#x25BC;' ; # large triangle down
 
 # ----------------- color tagging ---------
 
@@ -101,9 +101,9 @@ for my $i ( 0 .. $#warn_levels ) {
 	
 
 
-	my $lg_hi = sprintf '<tr bgcolor="#%s"><td>%s</td><td>%s</td><td>%s</td></td></tr>' . "\n" , 
+	my $lg_hi = sprintf '<tr bgcolor="#%s"><td>%s</td><td>%s</td><td>%s</td></tr>' . "\n" , 
 		$warn_col_hi[$i] , $txt_hi  , $tag , 'hi' ;
-	my $lg_lo = sprintf '<tr bgcolor="#%s"><td>%s</td><td>%s</td><td>%s</td></td</tr>' . "\n" , 
+	my $lg_lo = sprintf '<tr bgcolor="#%s"><td>%s</td><td>%s</td><td>%s</td></tr>' . "\n" , 
 		$warn_col_lo[$i] , $txt_lo  , $tag , 'lo' ;
 	push    @color_legend, $lg_hi ;
 	unshift @color_legend, $lg_lo ;
@@ -124,7 +124,7 @@ for my $i (0 .. 99) {
 	my $green = 0x100 * $i/100 ;
 	my $red = 0xff - $green ;
 	my $color = sprintf '#%02x%02x%02x', $red , $green , 0 ;
-	$soc_symbol .= sprintf ('<td bgcolor="%s" width="3" height="40"  >&nbsp</td>' , $color  ) ;
+	$soc_symbol .= sprintf ('<td bgcolor="%s" width="3" height="40"  >&nbsp;</td>' , $color  ) ;
 }
 
 $soc_symbol .= '</tr></table>';
@@ -170,7 +170,9 @@ printf $tv_format, 'niedrigste Zellenspannung', $U_c_min, 'V &#x25B2;' ;
 printf $tv_format, 'Differenz der Zellenspannungen',  
 	(sprintf '%0.3f'   , $U_c_diff ),  'V &#x29D7; ' ;
 
+# print '<font size="-2">';
 print join "\n", @color_legend;
+# print '</font>';
 
 
 print '</table></td>'."\n";
