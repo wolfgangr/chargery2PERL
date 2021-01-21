@@ -127,8 +127,13 @@ sub rrd_lastupdate {
 
 	# my @ds_tags = grep { /^ds\[(\S+)\]\.last_ds$/  } sort keys %$rrd_info ;
 	# my %ds_map = map {  /^ds\[(\S+)\]\.last_ds$/  ?  ($1, $_ ) : ( )  } sort keys %$rrd_info ;
-	my %ds_map = map {  /^ds\[(\S+)\]\.index$/  ?   ($$rrd_info{ $_}  , $1 ) : ( )  } sort keys %$rrd_info ;
-	my @ds_tags = map { $ds_map{ $_ } } sort { $a <=> $b }  keys %ds_map; 
+	 
+	# map `ds[U01].index = 0`  to % ( label => index ) 
+	my %ds_map = map {  /^ds\[(\S+)\]\.index$/  ?   ( $1 , $$rrd_info{ $_}   ) : ( )  } sort keys %$rrd_info ;
+	# my @ds_tags = map { $ds_map{ $_ } } sort { $a <=> $b }  keys %ds_map; 
+	
+	# tag array - rotec by index
+	my @ds_tags =  sort  {  $ds_map{ $a } <=> $ds_map{ $b }   }   keys %ds_map; 
 	# my @ds_index = map sprintf 
 
 	$rvh{ ds_tags } = \@ds_tags ;
