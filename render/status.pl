@@ -7,6 +7,8 @@ use RRDs;
 # use CGI;
 use CGI qw/:standard/;
 use Data::Dumper::Simple ;
+use Time::Piece;
+
 
 # cells.rrd  pack56.rrd  pack57.rrd
 my $rrd_dir = '../';
@@ -41,6 +43,11 @@ my $title = sprintf "BMS status %s V %s Ah %s %s %dS%dP",
 #         OK  (0s)        |  curr mode Vend_c SOC temp1 temp2
 # 2021-01-21 10:11:13     |       0 2 2.75 0 15.5 11.2 
 
+my $lastupdate = RRDs::last ( $rrd_cells );
+my $rrd_ERR=RRDs::error ; #  || '' ;
+my $lastupdate_obj = Time::Piece->new($lastupdate);
+my $lastupdate_hr = $lastupdate_obj->datetime ;
+
 
 print header();
 print start_html(-title => $title);
@@ -50,6 +57,11 @@ print "<pre>\n";
 
 print Dumper (\%pack_info);
 print Dumper ( \@warn_levels , \@warn_colors);
+
+print "\$lastupdate $lastupdate\n";
+printf "\$rrd_ERR %s \n" , ($rrd_ERR || '-')  ;
+print "\$lastupdate_hr, $lastupdate_hr\n";
+
 print "</pre>\n";
 
 
