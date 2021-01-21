@@ -20,7 +20,9 @@ my $rrd_p57   = $rrd_dir . 'pack57.rrd';
 # reference data from cell data sheet
 our %pack_info;
 our @warn_levels  ;
-our @warn_colors ;
+our @warn_col_lo ;
+our @warn_col_hi ;
+
 require '../BMS-pack-info.pm';
 
 require '../rrd_lastupdate.pm';
@@ -58,6 +60,8 @@ for my $tag ( qw ( curr mode Vend_c SOC temp1 temp2  ))
 my @modes = qw ( Entladen Laden Speichern );
 my $mode = $modes[ $tv{ mode } ] ;
 
+
+#------------------- quantiles visualisation ----------------------
 my @cell_volts =  @{$cells_state{ 'ds_last'  }} ;
 # max, min, qantiles by sorting indices by value
 my @index_by_value = sort { $cell_volts[$a] <=> $cell_volts[$b] } (0 .. $#cell_volts) ;
@@ -66,7 +70,7 @@ my $U_c_max = $cell_volts [$index_by_value[-1] ] ;
 my $U_c_diff = $U_c_max - $U_c_min ;
 
 # triangles to be rendered with after cell voltage
-my @cv_triangles = '' x scalar @cell_volts ;
+my @cv_triangles = (('') x scalar @cell_volts) ;
 @cv_triangles[$index_by_value[0]] = '&#x25B2' ; # large triangle up
 @cv_triangles[$index_by_value[1]] = '&#x25B4' ; # small triangle up
 @cv_triangles[$index_by_value[2]] = '&#x25B4' ; # small triangle up
@@ -74,10 +78,13 @@ my @cv_triangles = '' x scalar @cell_volts ;
 @cv_triangles[$index_by_value[-2]] = '&#x25BE' ; # small triangle down
 @cv_triangles[$index_by_value[-1]] = '&#x25BC' ; # large triangle down
 
+# ----------------- color tagging ---------
+
+# debugger
 
 
 
-#---------------------------------------------------------------------------------
+#-------------------  soc symbol ---------------------------------
 # soc symbol is rendered as table in whatever whith 100 vertical bars as <td width="3" height="40"  
 # and a gradient from red to green
 # TODO  make dependent on real soc once we have such
@@ -160,7 +167,7 @@ print "\n</tr></table>\n<hr>";
 print "<pre>\n";
 
 print Dumper (\%pack_info);
-print Dumper ( \@warn_levels , \@warn_colors);
+print Dumper ( \@warn_levels , \@warn_col_lo , \@warn_col_hi   );
 
 print "\$lastupdate: $cells_state{ lastupdate } \n";
 print "\$rrd_ERR: $cells_state{ rrd_errstr } \n";
