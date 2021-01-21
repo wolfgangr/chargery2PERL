@@ -112,7 +112,15 @@ sub rrd_lastupdate {
                 return %rvh ;
         } 
 	$rvh{rrd_step} =  $$rrd_info{step};
-	$rvh{info_last_update} =  $$rrd_info{last_update};
+	$rvh{info_last_update} =  $$rrd_info{last_update}; # ah we can drop the first call
+
+	# my @ds_tags = grep { /^ds\[(\S+)\]\.last_ds$/  } sort keys %$rrd_info ;
+	my %ds_map = map {  /^ds\[(\S+)\]\.last_ds$/  ?  ($1, $_ ) : ( )  } sort keys %$rrd_info ;
+	my @ds_tags = sort keys %ds_map; 
+
+
+	$rvh{ ds_tags } = \@ds_tags ;
+	$rvh{ ds_map } = \%ds_map ;
 
 	# parse for stuff like
 	# 	 ds[U18].last_ds = "2.049"
