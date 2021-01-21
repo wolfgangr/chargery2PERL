@@ -6,6 +6,7 @@ use warnings;
 use RRDs;
 # use CGI;
 use CGI qw/:standard/;
+use utf8;
 use Data::Dumper::Simple ;
 use Time::Piece;
 
@@ -36,6 +37,7 @@ my $title = sprintf "BMS status %s V %s Ah %s %s %dS%dP",
 
 # cal our own rrd-last-update impmentation
 my %cells_state = rrd_lastupdate ( $rrd_cells );
+my $n_cells = scalar @{$cells_state{ds_tags}};
 
 #============================== start HTML =================================
 #
@@ -43,13 +45,31 @@ print header();
 print start_html(-title => $title);
 print h1($title);
 
-print "<hr>\n<table><tr>\n";
+print '<hr><table border=\"1\"><tr>'."\n";
+print '<td valign="top"><table><tr>'."\n";
+
+print '<td><table border="1" ><tr>'."\n";
+print '<td >soc</td><td width="300">symbol?</td>'."\n";
+print '</tr></table></td>'."\n";
+print '</tr><tr>';
+
+print '<td><table border="1" >'."\n";
+print '<tr><td>foo</td><td>bar</td></tr>'."\n";
+print '<tr><td>tralala</td><td>pipapo</td></tr>'."\n";
+print '<tr><td>asdf</td><td>jklö</td></tr>'."\n";
+
+print '</table></td>'."\n";
+
+print '</tr></table></td>'."\n";
 
 
-print map { sprintf '<th>%s</th>' , $_ } @{$cells_state{ds_tags}} ;
-print "</tr>\n<tr>";
-print map { sprintf '<td align="ceter">%s V</td>' , $_ } @{$cells_state{ds_last}} ;
-
+# nested table with the cells bottom up
+print '<td ><table  cellpadding="3" cellspacing="5" bgcolor="#dddddd">' ."\n";
+for ( my $cell =  $n_cells -1 ; $cell>= 0  ; $cell--   ) {
+	printf '<tr><td bgcolor="#aaaaaa" >%s</td><td bgcolor="#cccccc" >%0.3f V</td></tr>' ."\n" , 
+		$cells_state{ds_tags}->[ $cell ],  $cells_state{ds_last}->[ $cell ] ;
+}
+print "</table></td>\n";
 
 
 
