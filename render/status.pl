@@ -39,6 +39,20 @@ my $title = sprintf "BMS status %s V %s Ah %s %s %dS%dP",
 my %cells_state = rrd_lastupdate ( $rrd_cells );
 my $n_cells = scalar @{$cells_state{ds_tags}};
 
+
+my $soc_symbol = '<table cellpadding ="0" cellspacing="0" ><tr>' ;
+
+for my $i (0 .. 99) {
+	# my $color = # int ( 0x100 * (  ((100-$i) * 2.5 ) + ($i * 2.5 * 0x100)     ) ) ;
+	my $green = 0x100 * $i/100 ;
+	my $red = 0xff - $green ;
+	my $color = sprintf '#%02x%02x%02x', $red , $green , 0 ;
+	$soc_symbol .= sprintf ('<td bgcolor="%s" width="3" height="40"  >&nbsp</td>' , $color  ) ;
+}
+
+$soc_symbol .= '</tr></table>';
+
+
 #============================== start HTML =================================
 #
 print header();
@@ -49,7 +63,7 @@ print '<hr><table border=\"1\"><tr>'."\n";
 print '<td valign="top"><table><tr>'."\n";
 
 print '<td><table border="1" ><tr>'."\n";
-print '<td >soc</td><td width="300">symbol?</td>'."\n";
+print '<td >soc</td><td width="300">' . $soc_symbol  .  '</td>'."\n";
 print '</tr></table></td>'."\n";
 print '</tr><tr>';
 
