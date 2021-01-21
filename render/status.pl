@@ -33,21 +33,15 @@ my $title = sprintf "BMS status %s V %s Ah %s %s %dS%dP",
 ;
 
 
-# --- [ cells.rrd ] ---------------------------------  
-#        OK  (1s)        |  U01 U02 U03   ....  U20 U21 U22
-# 2021-01-21 10:11:12     |       2.058 2.074 2.067   ...  2.053 2.089 2.084 
-# --- [ pack56.rrd ] ---------------------------------  
-#         OK  (1s)        |  Vtot Ah Wh
-# 2021-01-21 10:11:12     |       45.724 3.975 0.055 
-# --- [ pack57.rrd ] ---------------------------------  
-#         OK  (0s)        |  curr mode Vend_c SOC temp1 temp2
-# 2021-01-21 10:11:13     |       0 2 2.75 0 15.5 11.2 
 
 my $lastupdate = RRDs::last ( $rrd_cells );
 my $rrd_ERR=RRDs::error ; #  || '' ;
 my $lastupdate_obj = Time::Piece->new($lastupdate);
 my $lastupdate_hr = $lastupdate_obj->datetime ;
 
+# my $cellstate = RRDs::lastupdate ( $rrd_cells );
+
+my %cells_state = rrd_lastupdate ( $rrd_cells );
 
 print header();
 print start_html(-title => $title);
@@ -62,8 +56,39 @@ print "\$lastupdate $lastupdate\n";
 printf "\$rrd_ERR %s \n" , ($rrd_ERR || '-')  ;
 print "\$lastupdate_hr, $lastupdate_hr\n";
 
+print Dumper ( \%cells_state );
+ 
+
 print "</pre>\n";
 
 
 print end_html();
+
+exit;
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# implements rrdtest / rrdtool lastupdate functionality
+# --- [ cells.rrd ] ---------------------------------
+#        OK  (1s)        |  U01 U02 U03   ....  U20 U21 U22
+# 2021-01-21 10:11:12     |       2.058 2.074 2.067   ...  2.053 2.089 2.084
+# --- [ pack56.rrd ] ---------------------------------
+#         OK  (1s)        |  Vtot Ah Wh
+# 2021-01-21 10:11:12     |       45.724 3.975 0.055
+# --- [ pack57.rrd ] ---------------------------------
+#         OK  (0s)        |  curr mode Vend_c SOC temp1 temp2
+# 2021-01-21 10:11:13     |       0 2 2.75 0 15.5 11.2
+# returns a status hash
+#
+# %rrdstatus = rrd_lastupdate ( $rrdfile, [ $gracetime ]) 
+sub rrd_lastupdate {
+	my $rrdfile = shift ;
+	my $gracetime = shift || 60 ;
+
+	my %rvh = ( rrdfile => $rrdfile , gracetime => $gracetime );
+
+	return %rvh ;
+		
+}
+
 
