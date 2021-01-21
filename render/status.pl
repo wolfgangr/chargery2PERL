@@ -132,7 +132,7 @@ printf $tv_format, 'höchste Zellenspannung',    $U_c_max, 'V &#x25BC;' ;
 printf $tv_format, 'niedrigste Zellenspannung', $U_c_min, 'V &#x25B2;' ;
 # printf $tv_format, 'höchste Zellenspannung', 	$U_c_max, 'V &#x25BC;' ;
 printf $tv_format, 'Differenz der Zellenspannungen',  
-	(sprintf '%0.3f'   , $U_c_diff ),  'V' ;
+	(sprintf '%0.3f'   , $U_c_diff ),  'V &#x29D7; ' ;
 
 
 

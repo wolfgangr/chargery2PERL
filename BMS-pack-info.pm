@@ -15,9 +15,11 @@ our %pack_info = (
 	U_max_stop	=> 2.8,
 	U_max_moderate	=> 2.7,
 	U_max_gentle    => 2.6,
+	U_max_info	=> 2.5,
 
 	U_nom           => 2.3,
 
+	U_min_info 	=> 2.1,
 	U_min_gentle	=> 2.0,
 	U_min_moderate	=> 1.9,
 	U_min_stop	=> 1.8,
@@ -25,8 +27,9 @@ our %pack_info = (
 
 ) ;
 
-our @warn_levels = qw( nom     gentle   moderate stop      cutoff) ;
-our @warn_colors = qw( 00cc00  aacc00   ffff00   ff6600    ff0000  );
+our @warn_levels  = qw( nom     info     gentle   moderate  stop     cutoff) ;
+our @warn_col_lo  = qw( ffff99  e5ff66   ffff00   ff6600    ff0000   ff00cc);
+our @warn_col_hi  = qw( ccff99  88ff66   44ff33   00ff88    00cccc   9933ff ) ;
 
 
 1;
