@@ -2,6 +2,7 @@
 our %pack_info = (
 	n_serial 	=> 22,
 	n_parallel 	=> 10,
+	cell_tech	=> 'LTO',
 	cell_type	=> 'Yinlong LTO66160H',
 
 	C_nom		=> 40,
@@ -22,7 +23,10 @@ our %pack_info = (
 	U_min_stop	=> 1.8,
 	U_min_cutoff    => 1.5,
 
-)
+) ;
+
+our @warn_levels = qw( nom     gentle   moderate stop      cutoff) ;
+our @warn_colors = qw( 00cc00  aacc00   ffff00   ff6600    ff0000  );
 
 
 1;
