@@ -58,11 +58,22 @@ for my $tag ( qw ( curr mode Vend_c SOC temp1 temp2  ))
 my @modes = qw ( Entladen Laden Speichern );
 my $mode = $modes[ $tv{ mode } ] ;
 
+my @cell_volts =  @{$cells_state{ 'ds_last'  }} ;
 # max, min, qantiles by sorting indices by value
+my @index_by_value = sort { $cell_volts[$a] <=> $cell_volts[$b] } (0 .. $#cell_volts) ;
+my $U_c_min = $cell_volts [$index_by_value[0]  ] ;
+my $U_c_max = $cell_volts [$index_by_value[-1] ] ;
+my $U_c_diff = $U_c_max - $U_c_min ;
 
-my @index_by_value =    
-	sort { $cells_state{ 'ds_last'  }->[ $a]    <=>  $cells_state{ 'ds_last'  }->[ $b]    } 
-	( 0 .. $#{$cells_state{ 'ds_last'  }} )   ;
+# triangles to be rendered with after cell voltage
+my @cv_triangles = '' x scalar @cell_volts ;
+@cv_triangles[$index_by_value[0]] = '&#x25B2' ; # large triangle up
+@cv_triangles[$index_by_value[1]] = '&#x25B4' ; # small triangle up
+@cv_triangles[$index_by_value[2]] = '&#x25B4' ; # small triangle up
+@cv_triangles[$index_by_value[-3]] = '&#x25BE' ; # small triangle down
+@cv_triangles[$index_by_value[-2]] = '&#x25BE' ; # small triangle down
+@cv_triangles[$index_by_value[-1]] = '&#x25BC' ; # large triangle down
+
 
 
 
@@ -109,14 +120,19 @@ my $tv_format = '<tr bgcolor="#ffffff" >'
 	. '<td>&nbsp;%s&nbsp;</td></tr>'
 	. "\n";
 
-printf $tv_format, 'Betriebszustand' , $mode , '' ;
-printf $tv_format, 'Gesamtspannung' , $tv{Vtot} , 'V' ;
-printf $tv_format, 'Strom', , $tv{curr} , 'A' ;
-printf $tv_format, 'Ladezustand', , $tv{SOC} , '%' ;
-printf $tv_format, 'Ladung', , $tv{Ah} , 'Ah' ;
-printf $tv_format, 'Energie', , $tv{Wh} /1000 , 'kWh' ;
-printf $tv_format, 'Batterietemperatur', , $tv{temp2}  , '°C' ;
-printf $tv_format, 'BMS Temperatur', , $tv{temp1}  , '°C' ;
+printf $tv_format, 'Betriebszustand' , 		$mode , '' ;
+printf $tv_format, 'Gesamtspannung' , 		$tv{Vtot} , 'V' ;
+printf $tv_format, 'Strom',  			$tv{curr} , 'A' ;
+printf $tv_format, 'Ladezustand',  		$tv{SOC} , '%' ;
+printf $tv_format, 'Ladung',  			$tv{Ah} , 'Ah' ;
+printf $tv_format, 'Energie',  			$tv{Wh} /1000 , 'kWh' ;
+printf $tv_format, 'Batterietemperatur',  	$tv{temp2}  , '°C' ;
+printf $tv_format, 'BMS Temperatur',  		$tv{temp1}  , '°C' ;
+printf $tv_format, 'höchste Zellenspannung',    $U_c_max, 'V &#x25BC;' ;
+printf $tv_format, 'niedrigste Zellenspannung', $U_c_min, 'V &#x25B2;' ;
+# printf $tv_format, 'höchste Zellenspannung', 	$U_c_max, 'V &#x25BC;' ;
+printf $tv_format, 'Differenz der Zellenspannungen',  
+	(sprintf '%0.3f'   , $U_c_diff ),  'V' ;
 
 
 
@@ -129,8 +145,10 @@ print '</tr></table></td>'."\n";
 # nested table with the cells bottom up
 print '<td ><table  cellpadding="3" cellspacing="5" bgcolor="#dddddd">' ."\n";
 for ( my $cell =  $n_cells -1 ; $cell>= 0  ; $cell--   ) {
-	printf '<tr><td bgcolor="#aaaaaa" >%s</td><td bgcolor="#cccccc" >%0.3f V</td></tr>' ."\n" , 
-		$cells_state{ds_tags}->[ $cell ],  $cells_state{ds_last}->[ $cell ] ;
+	printf '<tr><td bgcolor="#aaaaaa" >%s</td><td bgcolor="#cccccc" >%0.3f V</td><td>%s</td></tr>' ."\n" , 
+		$cells_state{ds_tags}->[ $cell ],  
+		$cells_state{ds_last}->[ $cell ], 
+		$cv_triangles[ $cell ] ;
 }
 print "</table></td>\n";
 
@@ -152,6 +170,7 @@ print "\$lastupdate_hr: $cells_state{ lastupdate_hr } \n";
 print Dumper ( \%cells_state );
 # print Dumper ( \%p56_state , \%p57_state ); 
 print Dumper ( \%tv );
+print Dumper ( \@cell_volts );
 print Dumper ( \@index_by_value );
 print "</pre>\n";
 # ~~~~~~~~ end of debug ~~~~~~~~~~~~~~~~~~~~~~~~~
