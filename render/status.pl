@@ -114,10 +114,22 @@ sub rrd_lastupdate {
 	$rvh{rrd_step} =  $$rrd_info{step};
 	$rvh{info_last_update} =  $$rrd_info{last_update}; # ah we can drop the first call
 
-	# my @ds_tags = grep { /^ds\[(\S+)\]\.last_ds$/  } sort keys %$rrd_info ;
-	my %ds_map = map {  /^ds\[(\S+)\]\.last_ds$/  ?  ($1, $_ ) : ( )  } sort keys %$rrd_info ;
-	my @ds_tags = sort keys %ds_map; 
+	# what can we know about ds?
+	#  ..$ rrdinfo cells.rrd | grep U01
+	# 	ds[U01].index = 0
+	#	ds[U01].type = "GAUGE"
+	#	ds[U01].minimal_heartbeat = 10
+	#	ds[U01].min = 0.0000000000e+00
+	#	ds[U01].max = 5.0000000000e+00
+	#	ds[U01].last_ds = "2.058"
+	#	ds[U01].value = 4.1160000000e+00
+	#	ds[U01].unknown_sec = 0
 
+	# my @ds_tags = grep { /^ds\[(\S+)\]\.last_ds$/  } sort keys %$rrd_info ;
+	# my %ds_map = map {  /^ds\[(\S+)\]\.last_ds$/  ?  ($1, $_ ) : ( )  } sort keys %$rrd_info ;
+	my %ds_map = map {  /^ds\[(\S+)\]\.index$/  ?   ($$rrd_info{ $_}  , $1 ) : ( )  } sort keys %$rrd_info ;
+	my @ds_tags = map { $ds_map{ $_ } } sort { $a <=> $b }  keys %ds_map; 
+	# my @ds_index = map sprintf 
 
 	$rvh{ ds_tags } = \@ds_tags ;
 	$rvh{ ds_map } = \%ds_map ;
