@@ -28,8 +28,9 @@ our %pack_info = (
 ) ;
 
 our @warn_levels  = qw( nom     info     gentle   moderate  stop     cutoff) ;
-our @warn_col_lo  = qw( ffff99  e5ff66   ffff00   ff6600    ff0000   ff00cc);
-our @warn_col_hi  = qw( ccff99  88ff66   44ff33   00ff88    00cccc   9933ff ) ;
+our @warn_col_lo  = qw( cccc8e  d8d844   ffff00   ff6600    ff0000   ff0088 );
+our @warn_col_hi  = qw( aacc8e  aaee66   44ff33   00cccc    0044ff   8800ff ) ;
+
 
 
 1;

@@ -83,6 +83,35 @@ my @cv_triangles = (('') x scalar @cell_volts) ;
 # debugger
 
 
+# color tagger legend
+
+my @color_legend =() ;
+for my $i ( 0 .. $#warn_levels ) {
+	my $tag = $warn_levels[$i] ;
+	# if ($tag eq 'nom') { $tag .= .
+	my ( $txt_lo , $txt_hi );
+	if ($tag eq 'nom') { 
+		$txt_lo = sprintf 'U < %0.2f V', $pack_info{ sprintf 'U_%s' , $tag };
+		$txt_hi = sprintf 'U > %0.2f V', $pack_info{ sprintf 'U_%s' , $tag };
+	} else {
+		$txt_lo = sprintf 'U < %0.2f V', $pack_info{ sprintf 'U_min_%s' , $tag };
+		$txt_hi = sprintf 'U > %0.2f V', $pack_info{ sprintf 'U_max_%s' , $tag };
+	}
+
+	
+
+
+	my $lg_hi = sprintf '<tr bgcolor="#%s"><td>%s</td><td>%s</td><td>%s</td></td></tr>' . "\n" , 
+		$warn_col_hi[$i] , $txt_hi  , $tag , 'hi' ;
+	my $lg_lo = sprintf '<tr bgcolor="#%s"><td>%s</td><td>%s</td><td>%s</td></td</tr>' . "\n" , 
+		$warn_col_lo[$i] , $txt_lo  , $tag , 'lo' ;
+	push    @color_legend, $lg_hi ;
+	unshift @color_legend, $lg_lo ;
+
+}
+
+
+
 
 #-------------------  soc symbol ---------------------------------
 # soc symbol is rendered as table in whatever whith 100 vertical bars as <td width="3" height="40"  
@@ -141,7 +170,7 @@ printf $tv_format, 'niedrigste Zellenspannung', $U_c_min, 'V &#x25B2;' ;
 printf $tv_format, 'Differenz der Zellenspannungen',  
 	(sprintf '%0.3f'   , $U_c_diff ),  'V &#x29D7; ' ;
 
-
+print join "\n", @color_legend;
 
 
 print '</table></td>'."\n";
@@ -174,11 +203,12 @@ print "\$rrd_ERR: $cells_state{ rrd_errstr } \n";
 print "\$lastupdate_hr: $cells_state{ lastupdate_hr } \n";
 
 
-print Dumper ( \%cells_state );
+# print Dumper ( \%cells_state );
 # print Dumper ( \%p56_state , \%p57_state ); 
-print Dumper ( \%tv );
-print Dumper ( \@cell_volts );
-print Dumper ( \@index_by_value );
+# print Dumper ( \%tv );
+# print Dumper ( \@cell_volts );
+# print Dumper ( \@index_by_value );
+# print Dumper ( \@color_legend );
 print "</pre>\n";
 # ~~~~~~~~ end of debug ~~~~~~~~~~~~~~~~~~~~~~~~~
 
