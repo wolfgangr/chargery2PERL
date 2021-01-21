@@ -147,16 +147,20 @@ Just to keep in mind....
 Sometimes the reason for log failure is the USB dongle.  
 We cannot physically unplug it, but we hope that we can do such a thing in software.  
   
-see this [blog entry](https://askubuntu.com/questions/645/how-do-you-reset-a-usb-device-from-the-command-line ) and find the usbreset.c  
+see this [blog entry](https://askubuntu.com/questions/645/how-do-you-reset-a-usb-device-from-the-command-line ) and find the `usbreset.c`  
 Compile and put to /usr/local/bin (or wherever you prefer).  
 Add sudo privileges fot this command w/o password.  
 Test.  Enjoy.  may be. I hope.  
   
 If not, reconsider:  
 `usbereset`simply calls `ioctl(fd, USBDEVFS_RESET, 0); ` on the device to reset.  
-But which device?   
+But which device?  
+   
 Obviously itis not the final `/dev/ttyUSBX` we are using, but there is a layer of USB driver inbetween.  
-I managed to climb down the device tree grepping through `udev info` output.
+It's sth like `/dev/bus/usb/004/008`, but I'm sure it vill vary by bus topology, plug sequence, may be hardware, kernel version, system configuration, and may be even phase of the moon.  
+I suspect `usbserial` sitting on the USB gadeget `ch341` (or whatever)  `/dev/bus/usb/004/008` and presenting `/dev/ttyUSBX` as abstraction of a serial interface. But that's not sound knowledge.   
+  
+I managed to climb down the device tree grepping through `udev info` output.  
 ```
 ...$ udevadm info /dev/serial/by-id/usb-1a86_USB2.0-Serial-if00-port0 | grep DEVPATH
 E: DEVPATH=/devices/pci0000:00/0000:00:12.0/usb4/4-5/4-5:1.0/ttyUSB1/tty/ttyUSB1
