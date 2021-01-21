@@ -91,11 +91,11 @@ for my $i ( 0 .. $#warn_levels ) {
 	# if ($tag eq 'nom') { $tag .= .
 	my ( $txt_lo , $txt_hi );
 	if ($tag eq 'nom') { 
-		$txt_lo = sprintf 'U < %0.2f V', $pack_info{ sprintf 'U_%s' , $tag };
-		$txt_hi = sprintf 'U > %0.2f V', $pack_info{ sprintf 'U_%s' , $tag };
+		$txt_lo = sprintf 'U &lt; %0.2f V', $pack_info{ sprintf 'U_%s' , $tag };
+		$txt_hi = sprintf 'U %gt; %0.2f V', $pack_info{ sprintf 'U_%s' , $tag };
 	} else {
-		$txt_lo = sprintf 'U < %0.2f V', $pack_info{ sprintf 'U_min_%s' , $tag };
-		$txt_hi = sprintf 'U > %0.2f V', $pack_info{ sprintf 'U_max_%s' , $tag };
+		$txt_lo = sprintf 'U &lt; %0.2f V', $pack_info{ sprintf 'U_min_%s' , $tag };
+		$txt_hi = sprintf 'U &gt; %0.2f V', $pack_info{ sprintf 'U_max_%s' , $tag };
 	}
 
 	
@@ -110,6 +110,15 @@ for my $i ( 0 .. $#warn_levels ) {
 
 }
 
+# -----------------------
+# tester
+# ($colordef, $max/min, $level)   = state_color ( $voltage) 
+
+my %coltester;
+for  ( my $U= 1.3 ; $U <=3; $U +=0.05 ) {
+	my @rtv = state_color($U );
+	$coltester{ sprintf '%0.2f', $U } = \@rtv ;
+}	
 
 
 
@@ -211,6 +220,7 @@ print "\$lastupdate_hr: $cells_state{ lastupdate_hr } \n";
 # print Dumper ( \@cell_volts );
 # print Dumper ( \@index_by_value );
 # print Dumper ( \@color_legend );
+print Dumper ( \%coltester );
 print "</pre>\n";
 # ~~~~~~~~ end of debug ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -219,4 +229,33 @@ print end_html();
 exit;
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# evaluate the voltage limits and map to state color
+# ($colordef, $max/min, $level)   = state_color ( $voltage) 
+sub state_color {
+	my $voltage = shift;
+	
+	my $hi_lo;
+	my $signum;
+	my @cols;
+	my $level;
 
+	# expand direction from U_nom
+	if ($voltage < $pack_info{ U_nom }) {
+		$hi_lo = 'min';
+		$signum = -1 ;
+		@cols = ( @warn_col_lo );
+	} else  {
+		$hi_lo = 'max';
+		$signum = +1 ;
+		@cols = ( @warn_col_hi );
+	}
+
+	# ifor my $wl (1 .. $#warn_levels) {
+	for ( my $i = $#warn_levels; $i >= 0 ;  $i-- ) {
+		if ( $voltage * $signum > $pack_info{ 'U_' . $hi_lo . '_' . $warn_levels[ $i ] } * $signum ) {
+			return ( @cols [ $i ] , $hi_lo , $i ) ;
+		}
+
+	}
+ 	return undef ; # (should not happen)
+}
