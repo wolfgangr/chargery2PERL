@@ -92,7 +92,7 @@ for my $i ( 0 .. $#warn_levels ) {
 	my ( $txt_lo , $txt_hi );
 	if ($tag eq 'nom') { 
 		$txt_lo = sprintf 'U &lt; %0.2f V', $pack_info{ sprintf 'U_%s' , $tag };
-		$txt_hi = sprintf 'U %gt; %0.2f V', $pack_info{ sprintf 'U_%s' , $tag };
+		$txt_hi = sprintf 'U &gt; %0.2f V', $pack_info{ sprintf 'U_%s' , $tag };
 	} else {
 		$txt_lo = sprintf 'U &lt; %0.2f V', $pack_info{ sprintf 'U_min_%s' , $tag };
 		$txt_hi = sprintf 'U &gt; %0.2f V', $pack_info{ sprintf 'U_max_%s' , $tag };
@@ -120,6 +120,14 @@ for  ( my $U= 1.3 ; $U <=3; $U +=0.05 ) {
 	$coltester{ sprintf '%0.2f', $U } = \@rtv ;
 }	
 
+
+# hack: add to color legend
+for my $ctk ( sort { $a <=> $b  }  keys %coltester) {
+ 	my ($clr, $min_max, $level) = @{$coltester{ $ctk }} ;
+	my $tst = sprintf '<tr bgcolor="#%s"><td>%s</td><td>%s</td><td>%s</td></tr>' . "\n" ,
+		$clr  ,$ctk, $level, $min_max ;
+	push    @color_legend, $tst ;
+}
 
 
 #-------------------  soc symbol ---------------------------------
@@ -240,7 +248,7 @@ sub state_color {
 	my $level;
 
 	# expand direction from U_nom
-	if ($voltage < $pack_info{ U_nom }) {
+	if ($voltage <= $pack_info{ U_nom }) {
 		$hi_lo = 'min';
 		$signum = -1 ;
 		@cols = ( @warn_col_lo );
@@ -251,11 +259,15 @@ sub state_color {
 	}
 
 	# ifor my $wl (1 .. $#warn_levels) {
-	for ( my $i = $#warn_levels; $i >= 0 ;  $i-- ) {
-		if ( $voltage * $signum > $pack_info{ 'U_' . $hi_lo . '_' . $warn_levels[ $i ] } * $signum ) {
+	for ( my $i = $#warn_levels; $i >= 1 ;  $i-- ) {
+	# for my $i ( 0.. $#warn_levels ) {
+		if ( ($voltage * $signum) > ($pack_info{ 'U_' . $hi_lo . '_' . $warn_levels[ $i ] } * $signum ) ) {
 			return ( @cols [ $i ] , $hi_lo , $i ) ;
+		
+		} else {
+			# return ( @cols [ 0 ] , $hi_lo , 0 ) ;
 		}
-
 	}
- 	return undef ; # (should not happen)
+	return ( @cols [ 0 ] , $hi_lo , 0 ) ;
+	# return undef;
 }
