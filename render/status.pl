@@ -34,35 +34,31 @@ my $title = sprintf "BMS status %s V %s Ah %s %s %dS%dP",
 	$pack_info{ n_parallel },
 ;
 
-
-
-my $lastupdate = RRDs::last ( $rrd_cells );
-my $rrd_ERR=RRDs::error ; #  || '' ;
-my $lastupdate_obj = Time::Piece->new($lastupdate);
-my $lastupdate_hr = $lastupdate_obj->datetime ;
-
-# my $cellstate = RRDs::lastupdate ( $rrd_cells );
-
+# cal our own rrd-last-update impmentation
 my %cells_state = rrd_lastupdate ( $rrd_cells );
 
+#============================== start HTML =================================
+#
 print header();
 print start_html(-title => $title);
 print h1($title);
 
+# ~~~~~~~~~ debug output ~~~~~~~~~~~~~~~~~~~~~~~
 print "<pre>\n";
 
 print Dumper (\%pack_info);
 print Dumper ( \@warn_levels , \@warn_colors);
 
-print "\$lastupdate $lastupdate\n";
-printf "\$rrd_ERR %s \n" , ($rrd_ERR || '-')  ;
-print "\$lastupdate_hr, $lastupdate_hr\n";
+print "\$lastupdate: $cells_state{ lastupdate } \n";
+print "\$rrd_ERR: $cells_state{ rrd_errstr } \n";
+print "\$lastupdate_hr: $cells_state{ lastupdate_hr } \n";
+
 
 print Dumper ( \%cells_state );
  
 
 print "</pre>\n";
-
+# ~~~~~~~~ end of debug ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 print end_html();
 
