@@ -148,7 +148,7 @@ Sometimes the reason for log failure is the USB dongle.
 We cannot physically unplug it, but we hope that we can do such a thing in software.  
   
 see this [blog entry](https://askubuntu.com/questions/645/how-do-you-reset-a-usb-device-from-the-command-line ) and find the `usbreset.c`  
-Compile and put to /usr/local/bin (or wherever you prefer).  
+Compile and put to `/usr/local/bin` (or wherever you prefer).  
 Add sudo privileges fot this command w/o password.  
 Test.  Enjoy.  may be. I hope.  
   
@@ -156,8 +156,19 @@ If not, reconsider:
 `usbereset`simply calls `ioctl(fd, USBDEVFS_RESET, 0); ` on the device to reset.  
 But which device?  
    
-Obviously itis not the final `/dev/ttyUSBX` we are using, but there is a layer of USB driver inbetween.  
-It's sth like `/dev/bus/usb/004/008`, but I'm sure it vill vary by bus topology, plug sequence, may be hardware, kernel version, system configuration, and may be even phase of the moon.  
+Obviously it is not the final `/dev/ttyUSBX` we have to reset, but there is a layer of USB driver inbetween.  
+It's sth like `/dev/bus/usb/004/008`, but I'm sure it will vary by bus topology, plug sequence, 
+may be hardware, kernel version, system configuration, and even by phase of the moon.  
+In the kernel log, I find refernces to sth like  `usb 4-5` and `4-5:1.0` - may be referring to the `interface` or  `endpoint` in the device (?).
+
+```
+[2033237.426214] ch341-uart ttyUSB1: ch341-uart converter now disconnected from ttyUSB1
+[2033237.427118] ch341 4-5:1.0: device disconnected
+[2033237.588919] usb 4-5: reset full-speed USB device number 8 using ohci-pci
+[2033237.777922] ch341 4-5:1.0: ch341-uart converter detected
+[2033237.794226] usb 4-5: ch341-uart converter now attached to ttyUSB1
+```
+
 I suspect `usbserial` sitting on the USB gadeget `ch341` (or whatever)  `/dev/bus/usb/004/008` and presenting `/dev/ttyUSBX` as abstraction of a serial interface. But that's not sound knowledge.   
   
 I managed to climb down the device tree grepping through `udev info` output.  
@@ -169,7 +180,8 @@ E: DEVNAME=/dev/bus/usb/004/008
 ```
 This is coded in `reset_ttyUSB.pl`, using `Cwd:abs_path` and some regexing.  
 I'm not sure, how portable this is. It might depend on USB path topology, hardware, ... ???  
-
+I tried my best by sticking to the right part of the tree, using syslinks in the device tree.  
+But it's a nightmare, there....   
 
 
 
