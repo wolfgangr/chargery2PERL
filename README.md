@@ -107,6 +107,6 @@ v0.26           added cron'able watchdog
 * OK - pull render into project tree
 * include status page and status API for BMS feed to infini
 * fix current shunt issue
-* switch from cron watchdog to systemd
+* OK - switch from cron watchdog to systemd
 * production test
  

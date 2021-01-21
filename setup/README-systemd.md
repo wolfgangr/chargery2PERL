@@ -150,7 +150,22 @@ We cannot physically unplug it, but we hope that we can do such a thing in softw
 see this [blog entry](https://askubuntu.com/questions/645/how-do-you-reset-a-usb-device-from-the-command-line ) and find the usbreset.c  
 Compile and put to /usr/local/bin (or wherever you prefer).  
 Add sudo privileges fot this command w/o password.  
-Test.  Enjoy.  
+Test.  Enjoy.  may be. I hope.  
+  
+If not, reconsider:  
+`usbereset`simply calls `ioctl(fd, USBDEVFS_RESET, 0); ` on the device to reset.  
+But which device?   
+Obviously itis not the final `/dev/ttyUSBX` we are using, but there is a layer of USB driver inbetween.  
+I managed to climb down the device tree grepping through `udev info` output.
+```
+...$ udevadm info /dev/serial/by-id/usb-1a86_USB2.0-Serial-if00-port0 | grep DEVPATH
+E: DEVPATH=/devices/pci0000:00/0000:00:12.0/usb4/4-5/4-5:1.0/ttyUSB1/tty/ttyUSB1
+...$ udevadm info /sys/devices/pci0000:00/0000:00:12.0/usb4/4-5/ | grep DEVNAME
+E: DEVNAME=/dev/bus/usb/004/008
+```
+This is coded in `reset_ttyUSB.pl`, using `Cwd:abs_path` and some regexing.  
+I'm not sure, how portable this is. It might depend on USB path topology, hardware, ... ???  
+
 
 
 
