@@ -36,12 +36,16 @@ my $title = sprintf "BMS status %s V %s Ah %s %s %dS%dP",
 	$pack_info{ n_parallel },
 ;
 
+# ------------ retrieving --------------------------------------
+
 # cal our own rrd-last-update impmentation
 my %cells_state = rrd_lastupdate ( $rrd_cells );
 my $n_cells = scalar @{$cells_state{ds_tags}};
 
 my %p56_state = rrd_lastupdate ( $rrd_p56 );
 my %p57_state = rrd_lastupdate ( $rrd_p57 );
+
+#------------------------ values retrieved, start evaluation ------------
 
 my %tv ;
 for my $tag ( qw (Vtot Ah Wh)) 
@@ -54,6 +58,15 @@ for my $tag ( qw ( curr mode Vend_c SOC temp1 temp2  ))
 my @modes = qw ( Entladen Laden Speichern );
 my $mode = $modes[ $tv{ mode } ] ;
 
+# max, min, qantiles by sorting indices by value
+
+my @index_by_value =    
+	sort { $cells_state{ 'ds_last'  }->[ $a]    <=>  $cells_state{ 'ds_last'  }->[ $b]    } 
+	( 0 .. $#{$cells_state{ 'ds_last'  }} )   ;
+
+
+
+#---------------------------------------------------------------------------------
 # soc symbol is rendered as table in whatever whith 100 vertical bars as <td width="3" height="40"  
 # and a gradient from red to green
 # TODO  make dependent on real soc once we have such
@@ -136,10 +149,10 @@ print "\$rrd_ERR: $cells_state{ rrd_errstr } \n";
 print "\$lastupdate_hr: $cells_state{ lastupdate_hr } \n";
 
 
-# print Dumper ( \%cells_state );
+print Dumper ( \%cells_state );
 # print Dumper ( \%p56_state , \%p57_state ); 
 print Dumper ( \%tv );
-
+print Dumper ( \@index_by_value );
 print "</pre>\n";
 # ~~~~~~~~ end of debug ~~~~~~~~~~~~~~~~~~~~~~~~~
 
