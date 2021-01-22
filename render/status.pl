@@ -98,9 +98,6 @@ for my $i ( 0 .. $#warn_levels ) {
 		$txt_hi = sprintf 'U &gt; %0.2f V', $pack_info{ sprintf 'U_max_%s' , $tag };
 	}
 
-	
-
-
 	my $lg_hi = sprintf '<tr bgcolor="#%s"><td>%s</td><td>%s</td><td>%s</td></tr>' . "\n" , 
 		$warn_col_hi[$i] , $txt_hi  , $tag , 'hi' ;
 	my $lg_lo = sprintf '<tr bgcolor="#%s"><td>%s</td><td>%s</td><td>%s</td></tr>' . "\n" , 
@@ -154,7 +151,7 @@ print header();
 print start_html(-title => $title);
 print h3($title);
 
-print '<hr><table border=\"1\"><tr>'."\n";
+print '<hr><table border="0"><tr>'."\n";
 print '<td valign="top"><table><tr>'."\n";
 
 # table left
@@ -208,9 +205,13 @@ print '</tr></table></td>'."\n";
 # nested table right half with the cells bottom up
 print '<td valign="top" ><table  cellpadding="3" cellspacing="5" bgcolor="#dddddd">' ."\n";
 for ( my $cell =  $n_cells -1 ; $cell>= 0  ; $cell--   ) {
-	printf '<tr><td bgcolor="#aaaaaa" >%s</td><td bgcolor="#cccccc" >%0.3f V</td><td>%s</td></tr>' ."\n" , 
-		$cells_state{ds_tags}->[ $cell ],  
-		$cells_state{ds_last}->[ $cell ], 
+	my $cV = $cells_state{ds_last}->[ $cell ];
+	my ($stat_clr  ) =   state_color ( $cV ) ;
+	printf '<tr><td bgcolor="#%s" >%s</td><td bgcolor="#cccccc" ><b>%0.3f</b> V</td><td>%s</td></tr>' ."\n" , 
+		$stat_clr,
+		$cells_state{ds_tags}->[ $cell ], 
+		$cV,  
+		# $cells_state{ds_last}->[ $cell ], 
 		$cv_triangles[ $cell ] ;
 }
 print "</table></td>\n";
