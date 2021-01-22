@@ -115,7 +115,8 @@ for my $i ( 0 .. $#warn_levels ) {
 # ($colordef, $max/min, $level)   = state_color ( $voltage) 
 
 my %coltester;
-for  ( my $U= 1.3 ; $U <=3; $U +=0.05 ) {
+for my $U ( () ) {
+# for  ( my $U= 1.3 ; $U <=3; $U +=0.05 ) {
 	my @rtv = state_color($U );
 	$coltester{ sprintf '%0.2f', $U } = \@rtv ;
 }	
@@ -125,7 +126,7 @@ for  ( my $U= 1.3 ; $U <=3; $U +=0.05 ) {
 for my $ctk ( sort { $a <=> $b  }  keys %coltester) {
  	my ($clr, $min_max, $level) = @{$coltester{ $ctk }} ;
 	my $tst = sprintf '<tr bgcolor="#%s"><td>%s</td><td>%s</td><td>%s</td></tr>' . "\n" ,
-		$clr  ,$ctk, $level, $min_max ;
+		$clr  ,$ctk,  $warn_levels[$level] , $min_max ;
 	push    @color_legend, $tst ;
 }
 
@@ -156,12 +157,14 @@ print h3($title);
 print '<hr><table border=\"1\"><tr>'."\n";
 print '<td valign="top"><table><tr>'."\n";
 
-print '<td><table border="1" ><tr>'."\n";
+# table left
+print '<td colspan = "2" align="right"><table border="1" ><tr>'."\n";
 print '<td >soc</td><td width="300">' . $soc_symbol  .  '</td>'."\n";
 print '</tr></table></td>'."\n";
 print '</tr><tr>';
 
-print '<td><table border="0" cellspacing ="3"  cellpadding="5"  bgcolor="#cccccc"  >'."\n";
+# table 'betriebszustand'
+print '<td valign="top"><table border="0" cellspacing ="3"  cellpadding="5"  bgcolor="#cccccc"  >'."\n";
 
 # print '<tr><td>&nbsp</td> <td>foo</td><td>bar</td></tr>'."\n";
 # print '<tr><td>tralala</td><td>pipapo</td><td>&nbsp</td> </tr>'."\n";
@@ -181,24 +184,29 @@ printf $tv_format, 'Ladung',  			$tv{Ah} , 'Ah' ;
 printf $tv_format, 'Energie',  			$tv{Wh} /1000 , 'kWh' ;
 printf $tv_format, 'Batterietemperatur',  	$tv{temp2}  , '°C' ;
 printf $tv_format, 'BMS Temperatur',  		$tv{temp1}  , '°C' ;
-printf $tv_format, 'höchste Zellenspannung',    $U_c_max, 'V &#x25BC;' ;
-printf $tv_format, 'niedrigste Zellenspannung', $U_c_min, 'V &#x25B2;' ;
-# printf $tv_format, 'höchste Zellenspannung', 	$U_c_max, 'V &#x25BC;' ;
-printf $tv_format, 'Differenz der Zellenspannungen',  
+printf $tv_format, 'höchste Zellspannung',    $U_c_max, 'V &#x25BC;' ;
+printf $tv_format, 'niedrigste Zellspannung', $U_c_min, 'V &#x25B2;' ;
+printf $tv_format, 'Differenz der Zellspannungen',  
 	(sprintf '%0.3f'   , $U_c_diff ),  'V &#x29D7; ' ;
-
+# printf $tv_format, '<i>Legende zur Farbcodierung</i>', '', '' ;
 # print '<font size="-2">';
-print join "\n", @color_legend;
+# print join "\n", @color_legend;
 # print '</font>';
 
 
 print '</table></td>'."\n";
+# Ende table Betriebszustand / Start table 'Legende Farbcodierung'
+print '<td><table border="0" cellspacing ="3"  cellpadding="5"  bgcolor="#cccccc"  >'."\n";
+printf $tv_format, '<i>Legende zur Farbcodierung</i>', '', '' ;
 
+print join "\n", @color_legend;
+print '</table></td>'."\n";
+# Ende table Farbcodierung
 print '</tr></table></td>'."\n";
+# ende table bottom left 
 
-
-# nested table with the cells bottom up
-print '<td ><table  cellpadding="3" cellspacing="5" bgcolor="#dddddd">' ."\n";
+# nested table right half with the cells bottom up
+print '<td valign="top" ><table  cellpadding="3" cellspacing="5" bgcolor="#dddddd">' ."\n";
 for ( my $cell =  $n_cells -1 ; $cell>= 0  ; $cell--   ) {
 	printf '<tr><td bgcolor="#aaaaaa" >%s</td><td bgcolor="#cccccc" >%0.3f V</td><td>%s</td></tr>' ."\n" , 
 		$cells_state{ds_tags}->[ $cell ],  
@@ -212,6 +220,7 @@ print "</table></td>\n";
 print "\n</tr></table>\n<hr>";
 
 # ~~~~~~~~~ debug output ~~~~~~~~~~~~~~~~~~~~~~~
+goto ENDOFDEBUG ;
 print "<pre>\n";
 
 print Dumper (\%pack_info);
@@ -230,6 +239,8 @@ print "\$lastupdate_hr: $cells_state{ lastupdate_hr } \n";
 # print Dumper ( \@color_legend );
 print Dumper ( \%coltester );
 print "</pre>\n";
+
+ENDOFDEBUG:
 # ~~~~~~~~ end of debug ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 print end_html();
@@ -248,7 +259,7 @@ sub state_color {
 	my $level;
 
 	# expand direction from U_nom
-	if ($voltage <= $pack_info{ U_nom }) {
+	if ($voltage < $pack_info{ U_nom }) {
 		$hi_lo = 'min';
 		$signum = -1 ;
 		@cols = ( @warn_col_lo );
@@ -262,12 +273,12 @@ sub state_color {
 	for ( my $i = $#warn_levels; $i >= 1 ;  $i-- ) {
 	# for my $i ( 0.. $#warn_levels ) {
 		if ( ($voltage * $signum) > ($pack_info{ 'U_' . $hi_lo . '_' . $warn_levels[ $i ] } * $signum ) ) {
-			return ( @cols [ $i ] , $hi_lo , $i ) ;
+			return ( $cols [ $i ] , $hi_lo , $i ) ;
 		
 		} else {
 			# return ( @cols [ 0 ] , $hi_lo , 0 ) ;
 		}
 	}
-	return ( @cols [ 0 ] , $hi_lo , 0 ) ;
+	return ( $cols [ 0 ] , $hi_lo , 0 ) ;
 	# return undef;
 }
