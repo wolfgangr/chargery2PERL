@@ -176,7 +176,20 @@ for my $target (@targets) {
 # ====================================== start HTML rendering ==================================================
 STARTHTML:
 print header,
-        start_html($title),
+        start_html($title);
+
+
+
+printf <<"EOF_FRAME" ,   ( './status.pl '  ) x 2 ;
+<iframe src="%s" height="300" width="1000"   name="log extract">
+  <p>Ihr Browser kann leider keine eingebetteten Frames anzeigen:
+  Sie können die eingebettete Seite über den folgenden Verweis aufrufen: 
+  <a href="%s">Log Extract</a>
+  </p>
+</iframe>
+EOF_FRAME
+
+print
         h3($title),
 	# hr,
 
